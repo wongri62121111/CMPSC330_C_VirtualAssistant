@@ -2,14 +2,17 @@
 	Name : Tommy Lu, Richard Wong
 	Course : CMPSC 330
 	Project : Virtual Assistant 
-	Date : 10/3/2024
+	Date : 11/7/2024
 */
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <iomanip> // For setting precision in output
-#include <math.h>
+#include <math.h> // For math functions 
+#include <random> // For random number 
+#include <cstdlib>
+#include <deque>
 
 using namespace std;
 
@@ -37,7 +40,7 @@ double determinant(double a, double b, double c, double d) {
 void inverse(double a, double b, double c, double d, double inv[2][2]) {
     double det = determinant(a, b, c, d);
     if (det == 0) {
-        std::cout << "The matrix is not invertible." << std::endl;
+        cout << "The matrix is not invertible." << endl;
         return;
     }
     double invDet = 1.0 / det;
@@ -53,50 +56,8 @@ void matrixMultiply(double A[2][2], double B[2], double result[2]) {
     result[1] = A[1][0] * B[0] + A[1][1] * B[1];
 }
 
-// Function prototypes
-void basicOperations(double num1, double num2);
-void averageNumbers(double num1, double num2);
-void checkEvenOdd(int num1, int num2);
-void checkPositiveNegativeZero(double num1, double num2);
-void calculateSquareRoot(double num);
-void calculateAbsoluteValue(double num);
-void calculateSquarePerimeterArea(double side);
-void multiplicationTableTwo();
-void calculateHypotenuse(double a, double b);
-void currencyExchange(double amount, double rate, bool dollarsToEuros);
-void swapNumbers(double &num1, double &num2);
-void findLargestofTwo(double num1, double num2);
-void findSmallestOfThree(double num1, double num2, double num3);
-void findLargestOfThree(double num1, double num2, double num3);
-void sumOfSquares(double num1, double num2);
-void findMinMaxOfThree(double num1, double num2, double num3);
-void sumFirstHundredIntegers();
-void sumFirstHundredEvenIntegers();
-void solveFirstDegreeEquation(double a, double b, double c);
-void solveSecondDegreeEquation(double a, double b, double c);
-void sumFirstNIntegers(int N);
-void sumFirstNEvenIntegers(int N);
-void convertDistance(double distance, bool kmToM);
-// Games 
-void tShirtCustomization();
-void quizGame();
-// Array
-void arrayOperations();
-void userInputArrayOperations();
-void multiplyArrayByNumber();
-void matrixOperations();
-void inverseMatrixLinearEquations();
-// Recursive functions 
-double calculateFactorial(double n);
-double calculateFibonacci(double n);
-double sumDigits(double n);
 
-// Helper functions for T-Shirt Customization
-string getInput(const string& prompt);
-int getChoice(const string& prompt, const string options[], int optionCount);
-string getYesNo(const string& prompt);
-
-// Linear Regression class 
+// Linear Regression class
 class LinearRegression {
 private:
     double slope;
@@ -162,14 +123,361 @@ public:
     }
 };
 
+int runLinearRegressionMenu() {
+    LinearRegression model;
+    int choice;
+    
+    cout << "Choose the example:\n";
+    cout << "1. Study Hours vs Exam Score\n";
+    cout << "2. House Size vs Price\n";
+    cout << "Enter your choice (1 or 2): ";
+    cin >> choice;
 
+    if (choice == 1) {
+        // Example 1: Study Hours vs Exam Score
+        vector<double> study_hours = {2, 3, 4, 5, 6, 7, 8};
+        vector<double> exam_scores = {65, 70, 75, 80, 85, 90, 95};
+        
+        model.fit(study_hours, exam_scores);
+        model.printStats();
+        
+        double study_time = 5;  // Predict score for 5 hours of study
+        cout << "\nPredicted exam score for " << study_time << " hours of study: "
+             << model.predict(study_time) << endl;
+    }
+    else if (choice == 2) {
+        // Example 2: House Size vs Price
+        vector<double> house_sizes = {1000, 1500, 1800, 2200, 2500, 3000, 3500};
+        vector<double> house_prices = {200000, 300000, 350000, 400000, 450000, 500000, 550000};
+        
+        model.fit(house_sizes, house_prices);
+        model.printStats();
+        
+        double house_size = 2000;  // Predict price for 2000 sq ft house
+        cout << "\nPredicted house price for " << house_size << " sq ft: $"
+             << model.predict(house_size) << endl;
+    }
+    else {
+        cout << "Invalid choice!" << endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+// Halloween Game
+class TrickOrTreat {
+private:
+    struct Candy {
+        string name;
+        int rarity;  // 1 = common, 2 = uncommon, 3 = rare, 4 = legendary
+        int score;
+    };
+
+    struct House {
+        string description;
+        vector<Candy> candyTypes;
+        bool visited;
+        int difficulty;  // 1-5, affects candy rarity chances
+    };
+
+    int totalCandy;
+    int score;
+    int movesLeft;
+    vector<Candy> inventory;
+    vector<House> houses;
+    mt19937 rng;
+
+    vector<Candy> commonCandy = {
+        {"Mini Chocolate Bar", 1, 10},
+        {"Candy Corn", 1, 10},
+        {"Bubble Gum", 1, 10},
+        {"Small Lollipop", 1, 10},
+        {"Hard Candy", 1, 10}
+    };
+
+    vector<Candy> uncommonCandy = {
+        {"Full-size Chocolate Bar", 2, 25},
+        {"Sour Gummy Worms", 2, 25},
+        {"Caramel Apple", 2, 25},
+        {"Candy Necklace", 2, 25},
+        {"Chocolate Coins", 2, 25}
+    };
+
+    vector<Candy> rareCandy = {
+        {"King-size Candy Bar", 3, 50},
+        {"Premium Chocolate Box", 3, 50},
+        {"Artisanal Lollipop", 3, 50},
+        {"Special Halloween Mix", 3, 50},
+        {"Imported Chocolate", 3, 50}
+    };
+
+    vector<Candy> legendaryCandy = {
+        {"Golden Chocolate Bar", 4, 100},
+        {"Mystical Halloween Treat", 4, 100},
+        {"Enchanted Candy Box", 4, 100},
+        {"Haunted House Special", 4, 100},
+        {"Ultimate Candy Collection", 4, 100}
+    };
+
+    void initializeHouses() {
+        houses = {
+            {"A spooky Victorian mansion with cobwebs everywhere", {}, false, 5},
+            {"A cozy cottage with jack-o'-lanterns lining the path", {}, false, 1},
+            {"A modern house with elaborate Halloween decorations", {}, false, 3},
+            {"A dimly lit house with creepy music playing", {}, false, 4},
+            {"A friendly-looking house with a 'Happy Halloween' banner", {}, false, 2},
+            {"An old cemetery keeper's house", {}, false, 5},
+            {"A haunted lighthouse by the sea", {}, false, 4},
+            {"A witch's cottage deep in the woods", {}, false, 5},
+            {"A suburban house with animatronic decorations", {}, false, 2},
+            {"A spooky treehouse with glowing windows", {}, false, 3},
+            {"An abandoned school turned haunted house", {}, false, 4},
+            {"A mysterious carnival trailer", {}, false, 3},
+            {"A gothic church converted to a residence", {}, false, 5},
+            {"A cute house with carved pumpkins everywhere", {}, false, 1},
+            {"A mad scientist's laboratory", {}, false, 4}
+        };
+
+        // Populate each house with possible candy based on difficulty
+        for (auto& house : houses) {
+            house.candyTypes = generateCandyList(house.difficulty);
+        }
+    }
+
+    vector<Candy> generateCandyList(int difficulty) {
+        vector<Candy> possibleCandy;
+        
+        // Add candy based on house difficulty
+        possibleCandy.insert(possibleCandy.end(), commonCandy.begin(), commonCandy.end());
+        
+        if (difficulty >= 2) {
+            possibleCandy.insert(possibleCandy.end(), uncommonCandy.begin(), uncommonCandy.end());
+        }
+        
+        if (difficulty >= 4) {
+            possibleCandy.insert(possibleCandy.end(), rareCandy.begin(), rareCandy.end());
+        }
+        
+        if (difficulty == 5) {
+            possibleCandy.insert(possibleCandy.end(), legendaryCandy.begin(), legendaryCandy.end());
+        }
+        
+        return possibleCandy;
+    }
+
+    void displayStatus() {
+        cout << "\n=== Status ===";
+        cout << "\nMoves remaining: " << movesLeft;
+        cout << "\nCurrent Score: " << score;
+        cout << "\nCandy Count: " << totalCandy;
+        cout << "\nInventory:";
+        if (inventory.empty()) {
+            cout << " Empty";
+        } else {
+            for (const auto& candy : inventory) {
+                string rarity;
+                switch(candy.rarity) {
+                    case 1: rarity = "Common"; break;
+                    case 2: rarity = "Uncommon"; break;
+                    case 3: rarity = "Rare"; break;
+                    case 4: rarity = "Legendary"; break;
+                }
+                cout << "\n- " << candy.name << " (" << rarity << ", Score: " << candy.score << ")";
+            }
+        }
+        cout << "\n\n";
+    }
+
+    void printLine(const string& text) {
+        cout << text << endl;
+    }
+
+    int getValidInput(int max) {
+        int choice;
+        while (true) {
+            cin >> choice;
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(10000, '\n');
+                cout << "Please enter a valid number between 1 and " << max << ": ";
+                continue;
+            }
+            
+            cin.ignore(10000, '\n');
+            
+            if (choice >= 1 && choice <= max) {
+                return choice;
+            }
+            
+            cout << "Please enter a number between 1 and " << max << ": ";
+        }
+    }
+
+    void visitHouse(int index) {
+        House& house = houses[index];
+        if (house.visited) {
+            printLine("You've already visited this house! The lights are now off.");
+            return;
+        }
+
+        printLine("\nYou approach " + house.description + "...");
+        printLine("*Knock knock*");
+
+        if (rng() % 10 < 8) { // 80% chance of success
+            printLine("The door opens!");
+            
+            // Candy rarity chances based on house difficulty
+            int randNum = rng() % 100;
+            int candyIndex;
+            vector<Candy>& possibleCandy = house.candyTypes;
+            
+            // Select candy based on rarity and house difficulty
+            if (house.difficulty == 5 && randNum < 10) {  // 10% chance for legendary in difficulty 5
+                candyIndex = rng() % legendaryCandy.size();
+                Candy receivedCandy = legendaryCandy[candyIndex];
+                printLine("WOW! You received a LEGENDARY treat: " + receivedCandy.name);
+                inventory.push_back(receivedCandy);
+                score += receivedCandy.score;
+            } else if (house.difficulty >= 4 && randNum < 30) {  // 30% chance for rare in difficulty 4+
+                candyIndex = rng() % rareCandy.size();
+                Candy receivedCandy = rareCandy[candyIndex];
+                printLine("Amazing! You received a RARE treat: " + receivedCandy.name);
+                inventory.push_back(receivedCandy);
+                score += receivedCandy.score;
+            } else if (house.difficulty >= 2 && randNum < 60) {  // 60% chance for uncommon in difficulty 2+
+                candyIndex = rng() % uncommonCandy.size();
+                Candy receivedCandy = uncommonCandy[candyIndex];
+                printLine("Nice! You received an UNCOMMON treat: " + receivedCandy.name);
+                inventory.push_back(receivedCandy);
+                score += receivedCandy.score;
+            } else {
+                candyIndex = rng() % commonCandy.size();
+                Candy receivedCandy = commonCandy[candyIndex];
+                printLine("You received a common treat: " + receivedCandy.name);
+                inventory.push_back(receivedCandy);
+                score += receivedCandy.score;
+            }
+            totalCandy++;
+        } else {
+            printLine("No one answers... Maybe they ran out of candy!");
+        }
+
+        house.visited = true;
+        movesLeft--;
+    }
+
+public:
+    TrickOrTreat() : totalCandy(0), score(0), movesLeft(10) {
+        rng.seed(12345);
+        initializeHouses();
+    }
+
+    void playGame() {
+        printLine("Welcome to the Halloween Trick-or-Treating Adventure!");
+        printLine("Your goal is to collect the most valuable candy possible!");
+        printLine("You have 10 moves before your parents call you home!");
+        printLine("\nCandy Rarity Levels:");
+        printLine("Common (10 pts) - Uncommon (25 pts) - Rare (50 pts) - Legendary (100 pts)");
+        printLine("Harder houses have better candy chances!\n");
+        
+        while (movesLeft > 0) {
+            displayStatus();
+            
+            cout << "\nAvailable houses:\n";
+            for (size_t i = 0; i < houses.size(); ++i) {
+                cout << (i + 1) << ". " << houses[i].description;
+                cout << " (Difficulty: " << houses[i].difficulty << "/5)";
+                if (houses[i].visited) cout << " (Visited)";
+                cout << endl;
+            }
+            cout << (houses.size() + 1) << ". End trick-or-treating early\n";
+            
+            cout << "\nWhich house would you like to visit? (1-" << houses.size() + 1 << "): ";
+            int choice = getValidInput(houses.size() + 1);
+            
+            if (choice == houses.size() + 1) {
+                break;
+            }
+            
+            visitHouse(choice - 1);
+        }
+
+        printLine("\n=== Game Over ===");
+        printLine("Time to head home! Here's how you did:");
+        printLine("Total Candy Collected: " + to_string(totalCandy));
+        printLine("Final Score: " + to_string(score));
+        
+        if (score >= 500) {
+            printLine("AMAZING! You're the Halloween Champion!");
+        } else if (score >= 300) {
+            printLine("Great job! You got quite a haul!");
+        } else if (score >= 100) {
+            printLine("Not bad! You got some good treats!");
+        } else {
+            printLine("Better luck next year!");
+        }
+    }
+};
+
+
+// Function prototypes
+void basicOperations(double num1, double num2);
+void averageNumbers(double num1, double num2);
+void checkEvenOdd(int num1, int num2);
+void checkPositiveNegativeZero(double num1, double num2);
+void calculateSquareRoot(double num);
+void calculateAbsoluteValue(double num);
+void calculateSquarePerimeterArea(double side);
+void multiplicationTableTwo();
+void calculateHypotenuse(double a, double b);
+void currencyExchange(double amount, double rate, bool dollarsToEuros);
+void swapNumbers(double &num1, double &num2);
+void findLargestofTwo(double num1, double num2);
+void findSmallestOfThree(double num1, double num2, double num3);
+void findLargestOfThree(double num1, double num2, double num3);
+void sumOfSquares(double num1, double num2);
+void findMinMaxOfThree(double num1, double num2, double num3);
+void sumFirstHundredIntegers();
+void sumFirstHundredEvenIntegers();
+void solveFirstDegreeEquation(double a, double b, double c);
+void solveSecondDegreeEquation(double a, double b, double c);
+void sumFirstNIntegers(int N);
+void sumFirstNEvenIntegers(int N);
+void convertDistance(double distance, bool kmToM);
+// Games 
+void tShirtCustomization();
+void quizGame();
+void tic_tac_toe();
+void conways_game_of_life();
+void minesweeper();
+// Array
+void arrayOperations();
+void userInputArrayOperations();
+void multiplyArrayByNumber();
+void matrixOperations();
+void inverseMatrixLinearEquations();
+// Recursive functions 
+double calculateFactorial(double n);
+double calculateFibonacci(double n);
+double sumDigits(double n);
+// Linear Regression
+int runLinearRegressionMenu();
+
+
+
+// Helper functions for T-Shirt Customization
+string getInput(const string& prompt);
+int getChoice(const string& prompt, const string options[], int optionCount);
+string getYesNo(const string& prompt);
 
 int main() {
     int categoryChoice, functionChoice;
     double num1, num2, num3;
+	TrickOrTreat game;
 
     do {
-        cout << "\nMath Operations Categories:\n";
+        cout << "\nVirtual Assistant Operations Categories:\n";
         cout << "1. Basic Operations\n";
         cout << "2. Number Properties\n";
         cout << "3. Geometry\n";
@@ -358,6 +666,7 @@ int main() {
                 cout << "1. Solve first-degree equation\n";
                 cout << "2. Solve second-degree equation\n";
 				cout << "3. Solving a system of two linear equations with the inverse matrix method\n";
+				cout << "4. Linear Regression example\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -374,6 +683,9 @@ int main() {
 					case 3:
 						inverseMatrixLinearEquations();
 						break;
+					case 4:
+						runLinearRegressionMenu();
+						break;
                     default:
                         cout << "Invalid choice.\n";
                 }
@@ -387,7 +699,6 @@ int main() {
 				cout << "5. User Input Array Operations\n";
 				cout << "6. Multiply Array by Number\n";
 				cout << "7. Matrix Operations\n";
-                cout << "8. Two Linear Regression Examples\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -429,43 +740,6 @@ int main() {
 					case 7:
 						matrixOperations();
 						break;	
-                    case 8:
-                        LinearRegression model;
-                        int choice;
-                        
-                        cout << "Choose the example:\n";
-                        cout << "1. Study Hours vs Exam Score\n";
-                        cout << "2. House Size vs Price\n";
-                        cout << "Enter your choice (1 or 2): ";
-                        cin >> choice;
-
-                        if (choice == 1) {
-                            // Example 1: Study Hours vs Exam Score
-                            vector<double> study_hours = {2, 3, 4, 5, 6, 7, 8};
-                            vector<double> exam_scores = {65, 70, 75, 80, 85, 90, 95};
-                            
-                            model.fit(study_hours, exam_scores);
-                            model.printStats();
-                            
-                            double study_time = 5;  // Predict score for 5 hours of study
-                            cout << "\nPredicted exam score for " << study_time << " hours of study: "
-                                << model.predict(study_time) << endl;
-                        }
-                        else if (choice == 2) {
-                            // Example 2: House Size vs Price
-                            vector<double> house_sizes = {1000, 1500, 1800, 2200, 2500, 3000, 3500};
-                            vector<double> house_prices = {200000, 300000, 350000, 400000, 450000, 500000, 550000};
-                            
-                            model.fit(house_sizes, house_prices);
-                            model.printStats();
-                            
-                            double house_size = 2000;  // Predict price for 2000 sq ft house
-                            cout << "\nPredicted house price for " << house_size << " sq ft: $"
-                                << model.predict(house_size) << endl;
-                        }
-                        else {
-                            cout << "Invalid choice!" << endl;
-                        }
                     default:
                         cout << "Invalid choice.\n";
                 }
@@ -474,6 +748,10 @@ int main() {
                 cout << "\nFun Activities:\n";
                 cout << "1. T-Shirt Customization\n";
                 cout << "2. Quiz Game\n";
+				cout << "3. Halloween Game\n";
+				cout << "4. Tic-Tac-Toe\n";
+				cout << "5. Conway's Game of Life\n";
+				cout << "6. Minesweeper\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -483,6 +761,17 @@ int main() {
                         break;
                     case 2:
                         quizGame();
+                        break;
+					case 3:
+						game.playGame();
+					case 4:
+                        tic_tac_toe();
+                        break;
+					case 5:
+                        conways_game_of_life();
+                        break;
+					case 6:
+                        minesweeper();
                         break;
                     default:
                         cout << "Invalid choice.\n";
@@ -1038,6 +1327,223 @@ double sumDigits(double n) {
     // Add the last digit (n % 10) to the sum of the remaining digits
     return (n - intPart * 10) + sumDigits(intPart);
 }
+
+// Tic-Tac-Toe Game
+void tic_tac_toe() {
+    vector<vector<char>> board(3, vector<char>(3, ' '));
+    char player = 'X';
+    int moves = 0;
+
+    auto print_board = [&]() {
+        for (int i = 0; i < 3; i++) {
+            cout << " --- --- ---" << endl;
+            cout << "| " << board[i][0] << " | " << board[i][1] << " | " << board[i][2] << " |" << endl;
+        }
+        cout << " --- --- ---" << endl;
+    };
+
+    auto check_win = [&]() {
+        // Check rows
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ')
+                return board[i][0];
+        }
+
+        // Check columns
+        for (int i = 0; i < 3; i++) {
+            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
+                return board[0][i];
+        }
+
+        // Check diagonals
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ')
+            return board[0][0];
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')
+            return board[0][2];
+
+        return ' ';
+    };
+
+    print_board();
+
+    while (moves < 9) {
+        int row, col;
+        cout << "Player " << player << ", enter row and column (1-3): ";
+        cin >> row >> col;
+        row--, col--;
+
+        if (board[row][col] == ' ') {
+            board[row][col] = player;
+            moves++;
+
+            char winner = check_win();
+            if (winner != ' ') {
+                print_board();
+                cout << "Player " << winner << " wins!" << endl;
+                return;
+            }
+
+            if (player == 'X')
+                player = 'O';
+            else
+                player = 'X';
+
+            print_board();
+        } else {
+            cout << "That position is already taken, try again." << endl;
+        }
+    }
+
+    cout << "It's a tie!" << endl;
+}
+
+// Conway's Game of Life 
+void conways_game_of_life() {
+    const int rows = 10, cols = 10;
+    vector<vector<bool>> grid(rows, vector<bool>(cols, false));
+
+    // Randomly initialize the grid
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            grid[i][j] = rand() % 2;
+        }
+    }
+
+    auto print_grid = [&]() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                cout << (grid[i][j] ? "#" : ".") << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    };
+
+    auto get_neighbors = [&](int i, int j) {
+        int count = 0;
+        for (int di = -1; di <= 1; di++) {
+            for (int dj = -1; dj <= 1; dj++) {
+                if (di == 0 && dj == 0)
+                    continue;
+                int ni = i + di, nj = j + dj;
+                if (ni >= 0 && ni < rows && nj >= 0 && nj < cols && grid[ni][nj])
+                    count++;
+            }
+        }
+        return count;
+    };
+
+    auto update_grid = [&]() {
+        vector<vector<bool>> new_grid = grid;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                int neighbors = get_neighbors(i, j);
+                if (grid[i][j]) {
+                    if (neighbors < 2 || neighbors > 3)
+                        new_grid[i][j] = false;
+                } else {
+                    if (neighbors == 3)
+                        new_grid[i][j] = true;
+                }
+            }
+        }
+        grid = move(new_grid);
+    };
+
+    print_grid();
+
+    for (int i = 0; i < 10; i++) {
+        cout << "Generation " << i + 1 << ":" << endl;
+        update_grid();
+        print_grid();
+    }
+}
+
+// Minesweeper game 
+void minesweeper() {
+    const int rows = 8, cols = 8;
+    const int num_mines = 10;
+    vector<vector<int>> board(rows, vector<int>(cols, 0));
+    vector<vector<bool>> revealed(rows, vector<bool>(cols, false));
+
+    // Place mines
+    for (int i = 0; i < num_mines; i++) {
+        int r, c;
+        do {
+            r = rand() % rows;
+            c = rand() % cols;
+        } while (board[r][c] == -1);
+        board[r][c] = -1;
+    }
+
+    // Calculate neighboring mine counts
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (board[i][j] != -1) {
+                for (int di = -1; di <= 1; di++) {
+                    for (int dj = -1; dj <= 1; dj++) {
+                        int ni = i + di, nj = j + dj;
+                        if (ni >= 0 && ni < rows && nj >= 0 && nj < cols && board[ni][nj] == -1) {
+                            board[i][j]++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    auto print_board = [&]() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (!revealed[i][j]) {
+                    cout << "□ ";
+                } else if (board[i][j] == -1) {
+                    cout << "X ";
+                } else {
+                    cout << board[i][j] << " ";
+                }
+            }
+            cout << endl;
+        }
+    };
+
+    int revealed_cells = 0;
+    while (revealed_cells < rows * cols - num_mines) {
+        print_board();
+        int row, col;
+        cout << "Enter row and column to reveal (1-8): ";
+        cin >> row >> col;
+        row--, col--;
+
+        if (revealed[row][col])
+            continue;
+
+        revealed[row][col] = true;
+        revealed_cells++;
+
+        if (board[row][col] == -1) {
+            cout << "You hit a mine! Game over." << endl;
+            print_board();
+            return;
+        }
+
+        if (board[row][col] == 0) {
+            for (int di = -1; di <= 1; di++) {
+                for (int dj = -1; dj <= 1; dj++) {
+                    int ni = row + di, nj = col + dj;
+                    if (ni >= 0 && ni < rows && nj >= 0 && nj < cols && !revealed[ni][nj]) {
+                        revealed[ni][nj] = true;
+                        revealed_cells++;
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "Congratulations, you win!" << endl;
+    print_board();
+}
+
 
 
 // Helper functions for T-Shirt Customization
