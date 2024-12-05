@@ -2,7 +2,7 @@
 	Name : Tommy Lu, Richard Wong
 	Course : CMPSC 330
 	Project : Virtual Assistant 
-	Date : 11/21/2024
+	Date : 12/5/2024
 */
 
 #include <iostream>
@@ -17,6 +17,9 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+
 
 using namespace std;
 
@@ -753,6 +756,9 @@ public:
 };
 
 
+
+
+
 // Function prototypes
 void basicOperations(double num1, double num2);
 void averageNumbers(double num1, double num2);
@@ -816,6 +822,8 @@ void subtractArraysWithPointers();
 void multiplyArraysWithPointers();
 void divideArraysWithPointers();
 void moduloArraysWithPointers();
+// CSV file reading and operation
+void processCsvData();
 
 const int SIZE = 6; // Size of the arrays
 
@@ -830,6 +838,7 @@ int main() {
     double num1, num2, num3;
 	TrickOrTreat game;
 	WellnessBot bot;
+    string filename;
 	
 
     do {
@@ -1102,6 +1111,7 @@ int main() {
 				cout << "13. Selection Sort [#43]\n";
 				cout << "14. Merge Sort [#44]\n";
 				cout << "15. Timezone Conversion [#48]\n";
+                cout << "16. CSV Reader and Organizer [#72]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -1167,8 +1177,11 @@ int main() {
 					case 15:
 						timezoneConversion();
 						break;
+                    case 16:
+                        processCsvData();
+                        break;
                     default:
-                        cout << "Invalid choice.\n";
+                        cout << "Invalid choice.\n" ;
                 }
                 break;
 			case 7: // Fun Activities
@@ -2381,6 +2394,56 @@ void moduloArraysWithPointers() {
     cout << endl;
 }
 
+// Read and process CSV files
+void processCsvData() {
+    string csvInput, line;
+    vector<string> rows;
+
+    // Prompt user for CSV data input
+    cout << "Enter CSV data (end with an empty line):\n";
+    while (true) {
+        getline(cin, line);
+        if (line.empty()) break;
+        rows.push_back(line);
+    }
+
+    if (rows.empty()) {
+        cout << "No data provided.\n";
+        return;
+    }
+
+    // Process the CSV data
+    int totalAge = 0, validEntries = 0;
+
+    for (size_t i = 0; i < rows.size(); ++i) {
+        stringstream ss(rows[i]);
+        string name, ageStr;
+
+        if (i == 0) {
+            // Skip the header row
+            continue;
+        }
+
+        // Extract name and age from the current row
+        if (getline(ss, name, ',') && getline(ss, ageStr)) {
+            try {
+                int age = stoi(ageStr);
+                totalAge += age;
+                validEntries++;
+            } catch (invalid_argument&) {
+                cout << "Invalid age value in row " << i + 1 << ": " << rows[i] << "\n";
+            } catch (out_of_range&) {
+                cout << "Age out of range in row " << i + 1 << ": " << rows[i] << "\n";
+            }
+        } else {
+            cout << "Malformed row " << i + 1 << ": " << rows[i] << "\n";
+        }
+    }
+
+    // Print the summary
+    cout << "Total sum of ages: " << totalAge << "\n";
+    cout << "Number of valid entries processed: " << validEntries << "\n";
+}
 
 
 // Helper functions for T-Shirt Customization
