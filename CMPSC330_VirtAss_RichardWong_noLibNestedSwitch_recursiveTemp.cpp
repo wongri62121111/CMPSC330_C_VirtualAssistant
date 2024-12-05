@@ -2,7 +2,7 @@
 	Name : Tommy Lu, Richard Wong
 	Course : CMPSC 330
 	Project : Virtual Assistant 
-	Date : 11/7/2024
+	Date : 11/21/2024
 */
 
 #include <iostream>
@@ -13,6 +13,10 @@
 #include <random> // For random number 
 #include <cstdlib>
 #include <deque>
+#include <ctime>
+#include <limits>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -55,6 +59,40 @@ void matrixMultiply(double A[2][2], double B[2], double result[2]) {
     result[0] = A[0][0] * B[0] + A[0][1] * B[1];
     result[1] = A[1][0] * B[0] + A[1][1] * B[1];
 }
+
+// 3x3 linear system solver with user input 
+vector<double> solveLinearSystem(double a1, double b1, double c1, double d1,
+                                double a2, double b2, double c2, double d2,
+                                double a3, double b3, double c3, double d3) {
+    vector<double> solution;
+    
+    double det = a1 * (b2 * c3 - b3 * c2) -
+                 b1 * (a2 * c3 - a3 * c2) +
+                 c1 * (a2 * b3 - a3 * b2);
+    
+    if (fabs(det) < 1e-10) {
+        return solution;
+    }
+    
+    double det_x = d1 * (b2 * c3 - b3 * c2) -
+                   b1 * (d2 * c3 - d3 * c2) +
+                   c1 * (d2 * b3 - d3 * b2);
+                   
+    double det_y = a1 * (d2 * c3 - d3 * c2) -
+                   d1 * (a2 * c3 - a3 * c2) +
+                   c1 * (a2 * d3 - a3 * d2);
+                   
+    double det_z = a1 * (b2 * d3 - b3 * d2) -
+                   b1 * (a2 * d3 - a3 * d2) +
+                   d1 * (a2 * b3 - a3 * b2);
+    
+    solution.push_back(det_x / det);
+    solution.push_back(det_y / det);
+    solution.push_back(det_z / det);
+    
+    return solution;
+}
+
 
 
 // Linear Regression class
@@ -420,6 +458,300 @@ public:
     }
 };
 
+//Point Class 
+class Point {
+	public:
+		int x, y;
+		Point(int x1, int y1) : x(x1), y(y1) {}
+		// Overloading the + operator
+		Point operator+(const Point &p) {
+			Point point(x + p.x, y + p.y);
+			return point;
+	}
+};
+
+//Shape Class
+class Shape {
+   public:
+    virtual double area() = 0;  // Pure virtual function
+};
+class Circle : public Shape {
+   private:
+    double radius;
+
+   public:
+    Circle(double r) : radius(r) {}
+    double area() { return 3.14 * radius * radius; }
+};
+
+//Animal Class 
+class Animal {
+   public:
+    virtual void speak() { cout << "Some sound" << endl; }
+};
+class Cat : public Animal {
+   public:
+    void speak() override { cout << "Meow" << endl; }
+};
+
+// Function to demonstrate Circle
+void demonstrateCircle() {
+    Circle circle(5);
+    cout << "Area of circle: " << circle.area() << endl;
+}
+
+// Function to demonstrate Point
+void demonstratePoint() {
+    Point p1(10, 5), p2(2, 4);
+    Point p3 = p1 + p2; // Operator overloading example
+    cout << "Point p3: (" << p3.x << ", " << p3.y << ")" << endl;
+}
+
+// Function to demonstrate Animal and Cat
+void demonstrateAnimal() {
+    Cat myCat;
+    myCat.speak();
+}
+
+// Wellness bot class 
+class WellnessBot {
+private:
+    struct ActivityMultiplier {
+        string level;
+        double multiplier;
+    };
+
+    const vector<ActivityMultiplier> ACTIVITY_MULTIPLIERS = {
+        {"sedentary", 1.2},
+        {"lightly active", 1.375},
+        {"moderately active", 1.55},
+        {"very active", 1.725}
+    };
+
+    struct MacroRatio {
+        double carbs = 0.5;    // 50% of calories from carbs
+        double protein = 0.2;  // 20% of calories from protein
+        double fats = 0.3;     // 30% of calories from fats
+    };
+
+    const double CALORIES_PER_GRAM_PROTEIN = 4.0;
+    const double CALORIES_PER_GRAM_CARBS = 4.0;
+    const double CALORIES_PER_GRAM_FAT = 9.0;
+
+    const double WATER_INTAKE_MULTIPLIER = 0.033; // Liters of water per kg
+
+    struct BMIThresholds {
+        const double underweight = 18.5;
+        const double normal = 24.9;
+        const double overweight = 29.9;
+    } bmiThresholds;
+
+    static bool isValidGender(const string& gender) {
+        string lower = gender;
+        transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+        return (lower == "male" || lower == "female");
+    }
+
+    static bool isValidActivityLevel(const string& level) {
+        string lower = level;
+        transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+        return (lower == "sedentary" || lower == "lightly active" || 
+                lower == "moderately active" || lower == "very active");
+    }
+
+    static bool isValidLifestyle(const string& lifestyle) {
+        string lower = lifestyle;
+        transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+        return (lower == "smoking" || lower == "alcohol" || lower == "none");
+    }
+
+    static bool isValidDietaryPref(const string& pref) {
+        string lower = pref;
+        transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+        return (lower == "vegetarian" || lower == "vegan" || lower == "none");
+    }
+
+    template<typename T>
+    static T getValidInput(const string& prompt, T min_value, T max_value) {
+        T value;
+        while (true) {
+            cout << prompt;
+            if (cin >> value && value >= min_value && value <= max_value) {
+                break;
+            }
+            cout << "Invalid input. Please enter a value between " 
+                 << min_value << " and " << max_value << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        return value;
+    }
+
+    static string getValidStringInput(const string& prompt, 
+                                      bool (*validationFunc)(const string&)) {
+        string input;
+        while (true) {
+            cout << prompt;
+            getline(cin, input);
+            if (validationFunc(input)) {
+                transform(input.begin(), input.end(), input.begin(), ::tolower);
+                return input;
+            }
+            cout << "Invalid input. Please try again.\n";
+        }
+    }
+
+public:
+    struct UserProfile {
+        int age;
+        string gender;
+        double height;  // in meters
+        double weight;  // in kg
+        string activityLevel;
+        int sleepHours;
+        string lifestyle;
+        string dietaryPref;
+        int stressLevel; // Scale of 1 to 10
+        int caffeineIntake; // Cups per day
+
+        // Calculated values
+        double bmi;
+        double bmr;
+        double dailyCalories;
+        double dailyWaterIntake; // in liters
+    };
+	
+	void run() {
+        auto profile = collectUserData();
+        calculateMetrics(profile);
+        displayResults(profile);
+    }
+	
+    UserProfile collectUserData() {
+        UserProfile profile;
+        
+        profile.age = getValidInput<int>("Enter your age: ", 1, 120);
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
+        profile.gender = getValidStringInput("Enter your gender (male/female): ", isValidGender);
+        
+        profile.height = getValidInput<double>("Enter your height (in meters): ", 0.5, 2.5);
+        profile.weight = getValidInput<double>("Enter your weight (in kg): ", 20.0, 300.0);
+        
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        profile.activityLevel = getValidStringInput(
+            "Enter your activity level (sedentary, lightly active, moderately active, very active): ",
+            isValidActivityLevel
+        );
+        
+        profile.sleepHours = getValidInput<int>("Enter your hours of sleep per night: ", 0, 24);
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
+        profile.lifestyle = getValidStringInput(
+            "Enter your lifestyle habits (smoking, alcohol, none): ",
+            isValidLifestyle
+        );
+        
+        profile.dietaryPref = getValidStringInput(
+            "Enter your dietary preferences (vegetarian, vegan, none): ",
+            isValidDietaryPref
+        );
+
+        profile.stressLevel = getValidInput<int>("Rate your stress level (1-10): ", 1, 10);
+        profile.caffeineIntake = getValidInput<int>("Enter your daily caffeine intake (cups): ", 0, 20);
+
+        return profile;
+    }
+
+    void calculateMetrics(UserProfile& profile) {
+        profile.bmi = profile.weight / pow(profile.height, 2);
+        
+        if (profile.gender == "male") {
+            profile.bmr = 88.362 + (13.397 * profile.weight) + 
+                          (4.799 * profile.height * 100) - (5.677 * profile.age);
+        } else {
+            profile.bmr = 447.593 + (9.247 * profile.weight) + 
+                          (3.098 * profile.height * 100) - (4.330 * profile.age);
+        }
+
+        for (const auto& activity : ACTIVITY_MULTIPLIERS) {
+            if (activity.level == profile.activityLevel) {
+                profile.dailyCalories = profile.bmr * activity.multiplier;
+                break;
+            }
+        }
+
+        profile.dailyWaterIntake = profile.weight * WATER_INTAKE_MULTIPLIER;
+    }
+
+    void displayResults(const UserProfile& profile) {
+        cout << "\n=== Wellness Assessment Results ===\n\n";
+        
+        cout << "BMI: " << fixed << setprecision(2) << profile.bmi << " - ";
+        if (profile.bmi < bmiThresholds.underweight)
+            cout << "Category: Underweight\n";
+        else if (profile.bmi < bmiThresholds.normal)
+            cout << "Category: Normal weight\n";
+        else if (profile.bmi < bmiThresholds.overweight)
+            cout << "Category: Overweight\n";
+        else
+            cout << "Category: Obese\n";
+
+        cout << "\nBMR: " << fixed << setprecision(2) 
+             << profile.bmr << " calories/day\n";
+        cout << "Daily Caloric Needs: " << profile.dailyCalories << " calories\n";
+        cout << "Daily Water Intake: " << profile.dailyWaterIntake << " liters\n";
+
+        MacroRatio macros;
+        cout << "\nRecommended Macronutrient Distribution:";
+        cout << "\n  - Carbohydrates: " 
+             << (profile.dailyCalories * macros.carbs / CALORIES_PER_GRAM_CARBS) 
+             << " grams";
+        cout << "\n  - Protein: " 
+             << (profile.dailyCalories * macros.protein / CALORIES_PER_GRAM_PROTEIN) 
+             << " grams";
+        cout << "\n  - Fats: " 
+             << (profile.dailyCalories * macros.fats / CALORIES_PER_GRAM_FAT) 
+             << " grams\n";
+
+        provideRecommendations(profile);
+    }
+
+    void provideRecommendations(const UserProfile& profile) {
+        cout << "\n=== Personalized Recommendations ===\n";
+
+        cout << "\nExercise Recommendations:\n";
+        if (profile.bmi >= bmiThresholds.normal) {
+            cout << "- Focus on low-impact activities like walking or swimming\n";
+            cout << "- Include strength training and flexibility exercises\n";
+        } else {
+            cout << "- Maintain a balanced exercise routine\n";
+        }
+
+        cout << "\nSleep Recommendations:\n";
+        if (profile.sleepHours < 7) {
+            cout << "- Aim to get 7-8 hours of sleep per night\n";
+        }
+
+        cout << "\nHydration Tips:\n";
+        cout << "- Drink at least " << profile.dailyWaterIntake << " liters of water daily.\n";
+
+        cout << "\nMental Health Tips:\n";
+        if (profile.stressLevel >= 7) {
+            cout << "- Consider relaxation techniques such as meditation or yoga.\n";
+        }
+
+        cout << "\nDietary Recommendations:\n";
+        if (profile.dietaryPref == "vegetarian") {
+            cout << "- Focus on protein sources like legumes and eggs.\n";
+        } else if (profile.dietaryPref == "vegan") {
+            cout << "- Include plant-based iron and calcium sources.\n";
+        } else {
+            cout << "- Opt for lean meats and whole grains.\n";
+        }
+    }
+};
+
 
 // Function prototypes
 void basicOperations(double num1, double num2);
@@ -457,13 +789,35 @@ void userInputArrayOperations();
 void multiplyArrayByNumber();
 void matrixOperations();
 void inverseMatrixLinearEquations();
+void solveLinearSystemFromInput();
 // Recursive functions 
 double calculateFactorial(double n);
 double calculateFibonacci(double n);
 double sumDigits(double n);
 // Linear Regression
 int runLinearRegressionMenu();
+// Function to demonstrate pointers with famous U.S. buildings
+void demonstratePointers();
+// Various functions
+void weightConversion();
+void bubbleSort();
+void selectionSort();
+void merge();
+void mergeSort();
+void performMergeSort();
+void mealCostCalculator();
+void randomIntegerGenerator();
+void randomInRange();
+void timezoneConversion();
+void volumeCalculator();
+// Array operations with pointers
+void addArraysWithPointers();
+void subtractArraysWithPointers();
+void multiplyArraysWithPointers();
+void divideArraysWithPointers();
+void moduloArraysWithPointers();
 
+const int SIZE = 6; // Size of the arrays
 
 
 // Helper functions for T-Shirt Customization
@@ -475,6 +829,8 @@ int main() {
     int categoryChoice, functionChoice;
     double num1, num2, num3;
 	TrickOrTreat game;
+	WellnessBot bot;
+	
 
     do {
         cout << "\nVirtual Assistant Operations Categories:\n";
@@ -492,11 +848,14 @@ int main() {
         switch(categoryChoice) {
             case 1: // Basic Operations
                 cout << "\nBasic Operations:\n";
-                cout << "1. Basic arithmetic (+-*/)\n";
-                cout << "2. Average of two numbers\n";
-                cout << "3. Absolute value\n";
-                cout << "4. Square root\n";
-                cout << "5. Sum of squares\n";
+                cout << "1. Basic arithmetic (+-*/) [#1-4][#39-40]\n";
+                cout << "2. Average of two numbers [#5]\n";
+                cout << "3. Absolute value [#9]\n";
+                cout << "4. Square root [#8]\n";
+                cout << "5. Sum of squares [#20]\n";
+				cout << "6. Meal cost and tip calculator [#45]\n";
+				cout << "7. Random number generator [#46]\n";
+				cout << "8. Random number generator between two numbers [#47]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -525,18 +884,31 @@ int main() {
                         cin >> num1 >> num2;
                         sumOfSquares(num1, num2);
                         break;
+					case 6:
+						mealCostCalculator();
+						break;
+					case 7:
+						randomIntegerGenerator();
+						break;
+					case 8:
+						randomInRange();
                     default:
                         cout << "Invalid choice.\n";
                 }
                 break;
             case 2: // Number Properties
                 cout << "\nNumber Properties:\n";
-                cout << "1. Check even/odd\n";
-                cout << "2. Check positive/negative/zero\n";
-				cout << "3. Find largest of two numbers\n";
-                cout << "4. Find smallest of three numbers\n";
-                cout << "5. Find largest of three numbers\n";
-                cout << "6. Find min and max of three numbers\n";
+                cout << "1. Check even/odd [#6]\n";
+                cout << "2. Check positive/negative/zero [#7]\n";
+				cout << "3. Find largest of two numbers [#38]\n";
+                cout << "4. Find smallest of three numbers [#18]\n";
+                cout << "5. Find largest of three numbers [#19]\n";
+                cout << "6. Find min and max of three numbers [#21]\n";
+				cout << "7. Array addition with pointers [#66]\n";
+				cout << "8. Array subtraction with pointers [#67]\n";
+				cout << "9. Array multiplication with pointers [#68]\n";
+				cout << "10. Array division with pointers [#69]\n";
+				cout << "11. Array modulo with pointers [#70]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -570,14 +942,30 @@ int main() {
                         cin >> num1 >> num2 >> num3;
                         findMinMaxOfThree(num1, num2, num3);
                         break;
+					case 7:
+						addArraysWithPointers();
+						break;
+					case 8:
+						subtractArraysWithPointers();
+						break;
+					case 9:
+						multiplyArraysWithPointers();
+						break;
+					case 10:
+						divideArraysWithPointers();
+						break;
+					case 11:
+						moduloArraysWithPointers();
+						break;
                     default:
                         cout << "Invalid choice.\n";
                 }
                 break;
             case 3: // Geometry
                 cout << "\nGeometry:\n";
-                cout << "1. Calculate square perimeter and area\n";
-                cout << "2. Calculate hypotenuse\n";
+                cout << "1. Calculate square perimeter and area [#10]\n";
+                cout << "2. Calculate hypotenuse [#14]\n";
+				cout << "3. Cube, Sphere and Cylinder volume calculator [#49]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -591,20 +979,23 @@ int main() {
                         cin >> num1 >> num2;
                         calculateHypotenuse(num1, num2);
                         break;
+					case 3:
+						volumeCalculator();
+						break;
                     default:
                         cout << "Invalid choice.\n";
                 }
                 break;
             case 4: // Series and Sequences
                 cout << "\nSeries and Sequences:\n";
-                cout << "1. Multiplication table of 2\n";
-                cout << "2. Sum of first 100 integers\n";
-                cout << "3. Sum of first 100 even integers\n";
-                cout << "4. Sum of first N integers\n";
-                cout << "5. Sum of first N even integers\n";
-				cout << "6. Calculate Factorial\n";          
-				cout << "7. Calculate Fibonacci Number\n";    
-				cout << "8. Calculate Sum of Digits\n";  
+                cout << "1. Multiplication table of 2 [#11-13]\n";
+                cout << "2. Sum of first 100 integers [#22]\n";
+                cout << "3. Sum of first 100 even integers [#23]\n";
+                cout << "4. Sum of first N integers [#26]\n";
+                cout << "5. Sum of first N even integers [#27]\n";
+				cout << "6. Calculate Factorial [#52]\n";          
+				cout << "7. Calculate Fibonacci Number [#53]\n";    
+				cout << "8. Calculate Sum of Digits [#54]\n";  
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -663,10 +1054,11 @@ int main() {
                 break;
             case 5: // Equations
                 cout << "\nEquations:\n";
-                cout << "1. Solve first-degree equation\n";
-                cout << "2. Solve second-degree equation\n";
-				cout << "3. Solving a system of two linear equations with the inverse matrix method\n";
-				cout << "4. Linear Regression example\n";
+                cout << "1. Solve first-degree equation [#24]\n";
+                cout << "2. Solve second-degree equation [#25]\n";
+				cout << "3. Solving a system of two linear equations with the inverse matrix method [#58]\n";
+				cout << "4. Solving a system of three linear equations [#59]\n";
+				cout << "5. Linear Regression example [#61-62]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -684,6 +1076,9 @@ int main() {
 						inverseMatrixLinearEquations();
 						break;
 					case 4:
+						solveLinearSystemFromInput();
+						break;
+					case 5:
 						runLinearRegressionMenu();
 						break;
                     default:
@@ -692,13 +1087,21 @@ int main() {
                 break;
             case 6: // Miscellaneous
                 cout << "\nMiscellaneous:\n";
-                cout << "1. Currency exchange\n";
-                cout << "2. Swap numbers\n";
-                cout << "3. Convert distance (km to m or m to km)\n";
-				cout << "4. Array Operations\n";
-				cout << "5. User Input Array Operations\n";
-				cout << "6. Multiply Array by Number\n";
-				cout << "7. Matrix Operations\n";
+                cout << "1. Currency exchange [#15-16]\n";
+                cout << "2. Swap numbers [#17]\n";
+                cout << "3. Convert distance (km to m or m to km) [#28]\n";
+				cout << "4. Array Operations [#31-33]\n";
+				cout << "5. User Input Array Operations [#34]\n";
+				cout << "6. Multiply Array by Number [#35]\n";
+				cout << "7. Matrix Operations [#37]\n";
+				cout << "8. Point class [#55]\n";
+				cout << "9. Shape class [#56]\n";
+				cout << "10. Animal class [#57]\n";
+				cout << "11. Weight conversion [#41]\n";
+				cout << "12. Bubble Sort [#42]\n";
+				cout << "13. Selection Sort [#43]\n";
+				cout << "14. Merge Sort [#44]\n";
+				cout << "15. Timezone Conversion [#48]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -740,18 +1143,44 @@ int main() {
 					case 7:
 						matrixOperations();
 						break;	
+					case 8:
+						demonstratePoint();
+						break;
+					case 9:
+						demonstrateCircle();
+						break;
+					case 10:
+						demonstrateAnimal();
+						break;		
+					case 11:
+						weightConversion();
+						break;
+					case 12:
+						bubbleSort();
+						break;
+					case 13:
+						selectionSort();
+						break;
+					case 14:
+						performMergeSort();
+						break;
+					case 15:
+						timezoneConversion();
+						break;
                     default:
                         cout << "Invalid choice.\n";
                 }
                 break;
 			case 7: // Fun Activities
                 cout << "\nFun Activities:\n";
-                cout << "1. T-Shirt Customization\n";
-                cout << "2. Quiz Game\n";
-				cout << "3. Halloween Game\n";
-				cout << "4. Tic-Tac-Toe\n";
-				cout << "5. Conway's Game of Life\n";
-				cout << "6. Minesweeper\n";
+                cout << "1. T-Shirt Customization [#30]\n";
+                cout << "2. Quiz Game [#29]\n";
+				cout << "3. Halloween Game [#51]\n";
+				cout << "4. Tic-Tac-Toe [#63]\n";
+				cout << "5. Conway's Game of Life [#64]\n";
+				cout << "6. Minesweeper [#60]\n";
+				cout << "7. Demonstrate pointers [#65]\n";
+				cout << "8. Wellness Bot [#71]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -773,6 +1202,12 @@ int main() {
 					case 6:
                         minesweeper();
                         break;
+					case 7:
+						demonstratePointers();
+						break;
+					case 8:
+						WellnessBot().run();
+						break;
                     default:
                         cout << "Invalid choice.\n";
                 }
@@ -1289,6 +1724,51 @@ void inverseMatrixLinearEquations() {
     cout << "y = " << X[1] << endl;
 }
 
+void solveLinearSystemFromInput() {
+    double a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3;
+    
+    cout << "Enter coefficients for three linear equations in the form: ax + by + cz = d\n\n";
+    
+    cout << "Enter coefficients for first equation:\n";
+    cout << "a1: "; cin >> a1;
+    cout << "b1: "; cin >> b1;
+    cout << "c1: "; cin >> c1;
+    cout << "d1: "; cin >> d1;
+    
+    cout << "\nEnter coefficients for second equation:\n";
+    cout << "a2: "; cin >> a2;
+    cout << "b2: "; cin >> b2;
+    cout << "c2: "; cin >> c2;
+    cout << "d2: "; cin >> d2;
+    
+    cout << "\nEnter coefficients for third equation:\n";
+    cout << "a3: "; cin >> a3;
+    cout << "b3: "; cin >> b3;
+    cout << "c3: "; cin >> c3;
+    cout << "d3: "; cin >> d3;
+    
+    cout << "\nSolving system:\n";
+    cout << a1 << "x + " << b1 << "y + " << c1 << "z = " << d1 << "\n";
+    cout << a2 << "x + " << b2 << "y + " << c2 << "z = " << d2 << "\n";
+    cout << a3 << "x + " << b3 << "y + " << c3 << "z = " << d3 << "\n\n";
+    
+    vector<double> result = solveLinearSystem(a1, b1, c1, d1,
+                                            a2, b2, c2, d2,
+                                            a3, b3, c3, d3);
+    
+    cout << fixed << setprecision(4);
+    
+    if (!result.empty()) {
+        cout << "Solution exists:\n";
+        cout << "x = " << result[0] << "\n";
+        cout << "y = " << result[1] << "\n";
+        cout << "z = " << result[2] << "\n";
+    } else {
+        cout << "No unique solution exists.\n";
+    }
+}
+
+
 
 // Recursive function to calculate factorial
 double calculateFactorial(double n) {
@@ -1542,6 +2022,363 @@ void minesweeper() {
 
     cout << "Congratulations, you win!" << endl;
     print_board();
+}
+
+// Function to demonstrate pointers with famous U.S. buildings
+void demonstratePointers() {
+    // Step 1: Declare variables representing famous U.S. buildings
+    string building1 = "Statue of Liberty";
+    string building2 = "Empire State Building";
+    string building3 = "White House";
+
+    // Step 2: Declare pointers to these variables
+    string* ptr1 = &building1; // Pointer to the address of building1
+    string* ptr2 = &building2; // Pointer to the address of building2
+    string* ptr3 = &building3; // Pointer to the address of building3
+
+    // Step 3: Print the values and addresses with improved formatting
+    cout << left << setw(25) << "Original Buildings:" << "Value" << setw(30) << "\tMemory Address" << '\n';
+    cout << left << setw(25) << "Building 1:" << building1 << "\t" << &building1 << '\n';
+    cout << left << setw(25) << "Building 2:" << building2 << "\t" << &building2 << '\n';
+    cout << left << setw(25) << "Building 3:" << building3 << "\t" << &building3 << '\n';
+
+    // Step 4: Use pointers to print the values and their addresses
+    cout << "\n" << left << setw(25) << "Pointer Demonstration:" << "Value" << setw(30) << "\tPointer Address" << '\n';
+    cout << left << setw(25) << "Pointer to Building 1:" << *ptr1 << "\t" << ptr1 << '\n';
+    cout << left << setw(25) << "Pointer to Building 2:" << *ptr2 << "\t" << ptr2 << '\n';
+    cout << left << setw(25) << "Pointer to Building 3:" << *ptr3 << "\t" << ptr3 << '\n';
+
+    // Step 5: Modify one variable through its pointer
+    *ptr3 = "Lincoln Memorial"; // Modify the value of building3 using its pointer
+    cout << "\nAfter modification through pointer:\n";
+    cout << left << setw(25) << "Building 3:" << building3 << '\n';
+
+    // Bonus: Demonstrate pointer arithmetic (optional learning)
+    string buildings[] = {building1, building2, building3};
+    string* ptrArray = buildings;
+    cout << "\nPointer Arithmetic Demonstration:\n";
+    cout << "First building using array pointer: " << *ptrArray << '\n';
+    cout << "Second building using pointer + 1: " << *(ptrArray + 1) << '\n';
+}
+
+// Converting weight from lb to kg or vice versa 
+void weightConversion() {
+    double weight;
+    char unit;
+    cout << "Enter weight (append 'k' for kg or 'l' for lb): ";
+    cin >> weight >> unit;
+    if (unit == 'k') {
+        cout << weight << " kg = " << weight * 2.20462 << " lb\n";
+    } else if (unit == 'l') {
+        cout << weight << " lb = " << weight / 2.20462 << " kg\n";
+    } else {
+        cout << "Invalid input.\n";
+    }
+}
+
+// Bubble Sort 
+void bubbleSort() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    vector<int> arr(n);
+    cout << "Enter elements:\n";
+    for (int &x : arr) cin >> x;
+
+    for (int i = 0; i < n - 1; ++i)
+        for (int j = 0; j < n - i - 1; ++j)
+            if (arr[j] > arr[j + 1])
+                swap(arr[j], arr[j + 1]);
+
+    cout << "Sorted array:\n";
+    for (int x : arr) cout << x << " ";
+    cout << endl;
+}
+
+// Selection Sort 
+void selectionSort() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    vector<int> arr(n);
+    cout << "Enter elements:\n";
+    for (int &x : arr) cin >> x;
+
+    for (int i = 0; i < n - 1; ++i) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; ++j)
+            if (arr[j] < arr[minIdx])
+                minIdx = j;
+        swap(arr[i], arr[minIdx]);
+    }
+
+    cout << "Sorted array:\n";
+    for (int x : arr) cout << x << " ";
+    cout << endl;
+}
+
+// Merge process for merge sort 
+void merge(vector<int> &arr, int l, int m, int r) {
+    int n1 = m - l + 1, n2 = r - m;
+    vector<int> L(arr.begin() + l, arr.begin() + m + 1);
+    vector<int> R(arr.begin() + m + 1, arr.begin() + r + 1);
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+}
+
+// Main mergesort function 
+void mergeSort(vector<int> &arr, int l, int r) {
+    if (l >= r) return;
+    int m = l + (r - l) / 2;
+    mergeSort(arr, l, m);
+    mergeSort(arr, m + 1, r);
+    merge(arr, l, m, r);
+}
+
+void performMergeSort() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    vector<int> arr(n);
+    cout << "Enter elements:\n";
+    for (int &x : arr) cin >> x;
+
+    mergeSort(arr, 0, n - 1);
+
+    cout << "Sorted array:\n";
+    for (int x : arr) cout << x << " ";
+    cout << endl;
+}
+
+// Meal and Tip calculator
+void mealCostCalculator() {
+    double mealCost, tipPercentage;
+    cout << "Enter meal cost: ";
+    cin >> mealCost;
+    cout << "Enter tip percentage: ";
+    cin >> tipPercentage;
+    double totalCost = mealCost + (mealCost * tipPercentage / 100.0);
+    cout << "Total cost including tip: $" << totalCost << endl;
+}
+
+// Random integer generator
+void randomIntegerGenerator() {
+    srand(time(0));
+    cout << "Random integer: " << rand() << endl;
+}
+
+// Random integer in range generator 
+void randomInRange() {
+    srand(time(0));
+    int min, max;
+    cout << "Enter min and max values: ";
+    cin >> min >> max;
+    cout << "Random number between " << min << " and " << max << ": "
+         << min + rand() % (max - min + 1) << endl;
+}
+
+// Timezone converter between EST and PST 
+void timezoneConversion() {
+    int originalHour, offset;
+    cout << "Enter original hour (24-hour format): ";
+    cin >> originalHour;
+    cout << "Enter timezone offset (e.g., -5 for EST): ";
+    cin >> offset;
+
+    int convertedHour = (originalHour + offset + 24) % 24;
+    cout << "Original hour: " << originalHour << "h, Converted hour: " << convertedHour << "h\n";
+}
+
+// Volume calculator for cube, sphere, cylinder
+void volumeCalculator() {
+    char shape;
+    cout << "Enter shape (c for cube, s for sphere, y for cylinder): ";
+    cin >> shape;
+
+    if (shape == 'c') {
+        double side;
+        cout << "Enter side length: ";
+        cin >> side;
+        cout << "Cube volume: " << pow(side, 3) << endl;
+    } else if (shape == 's') {
+        double radius;
+        cout << "Enter radius: ";
+        cin >> radius;
+        cout << "Sphere volume: " << (4.0 / 3.0) * M_PI * pow(radius, 3) << endl;
+    } else if (shape == 'y') {
+        double radius, height;
+        cout << "Enter radius and height: ";
+        cin >> radius >> height;
+        cout << "Cylinder volume: " << M_PI * pow(radius, 2) * height << endl;
+    } else {
+        cout << "Invalid shape.\n";
+    }
+}
+
+// Function for array addition using pointers
+void addArraysWithPointers() {
+    int arr1[SIZE], arr2[SIZE], arr3[SIZE];
+    int *ptr1 = arr1, *ptr2 = arr2, *ptr3 = arr3;
+
+    // Input elements for the first array
+    cout << "Enter 6 elements for the first array (for addition):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr1 + i);
+    }
+
+    // Input elements for the second array
+    cout << "Enter 6 elements for the second array (for addition):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr2 + i);
+    }
+
+    // Perform addition
+    for (int i = 0; i < SIZE; i++) {
+        *(ptr3 + i) = *(ptr1 + i) + *(ptr2 + i);
+    }
+
+    // Display the resulting array
+    cout << "The resulting array after addition is:" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cout << *(ptr3 + i) << " ";
+    }
+    cout << endl;
+}
+
+// Function for array subtraction using pointers
+void subtractArraysWithPointers() {
+    int arr1[SIZE], arr2[SIZE], arr3[SIZE];
+    int *ptr1 = arr1, *ptr2 = arr2, *ptr3 = arr3;
+
+    // Input elements for the first array
+    cout << "Enter 6 elements for the first array (for subtraction):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr1 + i);
+    }
+
+    // Input elements for the second array
+    cout << "Enter 6 elements for the second array (for subtraction):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr2 + i);
+    }
+
+    // Perform subtraction
+    for (int i = 0; i < SIZE; i++) {
+        *(ptr3 + i) = *(ptr1 + i) - *(ptr2 + i);
+    }
+
+    // Display the resulting array
+    cout << "The resulting array after subtraction is:" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cout << *(ptr3 + i) << " ";
+    }
+    cout << endl;
+}
+
+// Function for array multiplication using pointers
+void multiplyArraysWithPointers() {
+    int arr1[SIZE], arr2[SIZE], arr3[SIZE];
+    int *ptr1 = arr1, *ptr2 = arr2, *ptr3 = arr3;
+
+    // Input elements for the first array
+    cout << "Enter 6 elements for the first array (for multiplication):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr1 + i);
+    }
+
+    // Input elements for the second array
+    cout << "Enter 6 elements for the second array (for multiplication):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr2 + i);
+    }
+
+    // Perform multiplication
+    for (int i = 0; i < SIZE; i++) {
+        *(ptr3 + i) = *(ptr1 + i) * *(ptr2 + i);
+    }
+
+    // Display the resulting array
+    cout << "The resulting array after multiplication is:" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cout << *(ptr3 + i) << " ";
+    }
+    cout << endl;
+}
+
+// Function for array division using pointers
+void divideArraysWithPointers() {
+    int arr1[SIZE], arr2[SIZE], arr3[SIZE];
+    int *ptr1 = arr1, *ptr2 = arr2, *ptr3 = arr3;
+
+    // Input elements for the first array
+    cout << "Enter 6 elements for the first array (for division):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr1 + i);
+    }
+
+    // Input elements for the second array
+    cout << "Enter 6 elements for the second array (for division):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr2 + i);
+    }
+
+    // Perform division
+    for (int i = 0; i < SIZE; i++) {
+        if (*(ptr2 + i) != 0) { // Check for division by zero
+            *(ptr3 + i) = *(ptr1 + i) / *(ptr2 + i);
+        } else {
+            cout << "Error: Division by zero at element " << i + 1 << endl;
+            *(ptr3 + i) = 0; // Set result to 0 for invalid division
+        }
+    }
+
+    // Display the resulting array
+    cout << "The resulting array after division is:" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cout << *(ptr3 + i) << " ";
+    }
+    cout << endl;
+}
+
+// Function for array modulo using pointers
+void moduloArraysWithPointers() {
+    int arr1[SIZE], arr2[SIZE], arr3[SIZE];
+    int *ptr1 = arr1, *ptr2 = arr2, *ptr3 = arr3;
+
+    // Input elements for the first array
+    cout << "Enter 6 elements for the first array (for modulo):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr1 + i);
+    }
+
+    // Input elements for the second array
+    cout << "Enter 6 elements for the second array (for modulo):" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cin >> *(ptr2 + i);
+    }
+
+    // Perform modulo
+    for (int i = 0; i < SIZE; i++) {
+        if (*(ptr2 + i) != 0) { // Check for division by zero
+            *(ptr3 + i) = *(ptr1 + i) % *(ptr2 + i);
+        } else {
+            cout << "Error: Modulo by zero at element " << i + 1 << endl;
+            *(ptr3 + i) = 0; // Set result to 0 for invalid modulo
+        }
+    }
+
+    // Display the resulting array
+    cout << "The resulting array after modulo is:" << endl;
+    for (int i = 0; i < SIZE; i++) {
+        cout << *(ptr3 + i) << " ";
+    }
+    cout << endl;
 }
 
 
