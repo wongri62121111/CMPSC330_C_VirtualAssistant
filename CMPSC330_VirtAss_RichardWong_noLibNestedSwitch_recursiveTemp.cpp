@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <map>
 
 
 using namespace std;
@@ -755,8 +756,736 @@ public:
     }
 };
 
+class EnhancedWellnessBot {
+private:
+    // Research-Based Mental Health Scoring Mechanisms
+    const map<int, string> DEPRESSION_LEVELS = {
+        {0, "Minimal Depression"},
+        {5, "Mild Depression"},
+        {10, "Moderate Depression"},
+        {15, "Moderately Severe Depression"},
+        {20, "Severe Depression"}
+    };
+
+    const map<int, string> ANXIETY_LEVELS = {
+        {0, "Minimal Anxiety"},
+        {5, "Mild Anxiety"},
+        {10, "Moderate Anxiety"},
+        {15, "Severe Anxiety"}
+    };
+
+    // References to research-based screening tools
+    // Inspired by PHQ-9 and GAD-7 methodologies
+    vector<pair<string, int>> DEPRESSION_QUESTIONS = {
+        {"Feeling down, depressed, or hopeless", 0},
+        {"Little interest or pleasure in doing things", 0},
+        {"Trouble sleeping or sleeping too much", 0},
+        {"Feeling tired or having little energy", 0},
+        {"Poor appetite or overeating", 0},
+        {"Feeling bad about yourself", 0},
+        {"Trouble concentrating", 0},
+        {"Moving or speaking slowly, or being restless", 0},
+        {"Thoughts of self-harm", 0}
+    };
+
+    vector<pair<string, int>> ANXIETY_QUESTIONS = {
+        {"Feeling nervous, anxious, or on edge", 0},
+        {"Not being able to stop worrying", 0},
+        {"Worrying too much about different things", 0},
+        {"Trouble relaxing", 0},
+        {"Being so restless it's hard to sit still", 0},
+        {"Becoming easily annoyed or irritable", 0},
+        {"Feeling afraid something awful might happen", 0}
+    };
+
+    int assessMentalHealthSection(const vector<pair<string, int>>& questions, const string& category) {
+        int totalScore = 0;
+        for (auto& question : const_cast<vector<pair<string, int>>&>(questions)) {
+            cout << question.first << " \n\t(0-3 scale: 0=Not at all, 1=Occasionally, 2=Sometimes, 3=Nearly every day): ";
+            cin >> question.second;
+            totalScore += question.second;
+        }
+        return totalScore;
+    }
+
+    // Comprehensive list of recommendations
+    vector<string> coping_strategies = {
+        "Allow yourself to feel what you're feeling",
+        "Do something you have control over",
+        "Maintain a routine",
+        "Aim to get a good night's sleep",
+        "Try to eat balanced meals",
+        "Try a walk around the block",
+        "Make time for rest and relaxation",
+        "Reach out to loved ones"
+    };
+
+    vector<string> therapy_options = {
+        "Cognitive Behavioral Therapy (CBT)",
+        "Interpersonal Therapy",
+        "Mindfulness-based Cognitive Therapy",
+        "Acceptance and Commitment Therapy",
+        "Problem-solving Therapy",
+        "Exposure Therapy"
+    };
+
+    vector<string> alternative_treatments = {
+        "Hypnotherapy",
+        "Acupuncture",
+        "Nutritional supplements",
+        "Regular exercise",
+        "Meditation and mindfulness practices",
+        "Yoga",
+        "Stress reduction techniques"
+    };
+
+    vector<string> medication_options = {
+        "Consult about Antidepressants (SSRIs/SNRIs)",
+        "Explore Mood stabilizers",
+        "Discuss Anti-anxiety medications",
+        "Consider Beta-blockers for symptom management",
+        "Personalized medication consultation"
+    };
+
+    // Random selection method
+    vector<string> getRandomRecommendations(vector<string>& source, int count) {
+        // Use a random device to seed the random number generator
+        random_device rd;
+        mt19937 g(rd());
+
+        // Shuffle the source vector
+        shuffle(source.begin(), source.end(), g);
+
+        // Return the first 'count' recommendations
+        return vector<string>(source.begin(), source.begin() + min(count, static_cast<int>(source.size())));
+    }
+
+    void provideDepessionRecommendations(int score) {
+        cout << "\n=== Depression Recommendations ===\n";
+        
+        // Dynamic recommendation system
+        if (score <= 4) {
+            cout << "Your depression level is minimal. Continue maintaining good mental health practices.\n";
+            return;
+        }
+
+        // Combine all recommendation types
+        vector<string> allRecommendations;
+        allRecommendations.insert(allRecommendations.end(), 
+            coping_strategies.begin(), coping_strategies.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            therapy_options.begin(), therapy_options.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            alternative_treatments.begin(), alternative_treatments.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            medication_options.begin(), medication_options.end());
+
+        vector<string> selectedRecommendations;
+        if (score > 4 && score <= 9) {
+            cout << "Mild Depression: One recommended approach:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 1);
+        } else if (score > 9 && score <= 14) {
+            cout << "Moderate Depression: Two recommended approaches:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 2);
+        } else if (score > 14 && score <= 19) {
+            cout << "Moderately Severe Depression: Three recommended approaches:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 3);
+        } else {
+            cout << "!!! SEVERE DEPRESSION DETECTED !!!\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 4);
+            cout << "IMMEDIATE professional psychiatric evaluation is CRITICAL.\n";
+            cout << "Emergency contact numbers:\n";
+            cout << "National Suicide Prevention Lifeline: 988\n";
+            cout << "Crisis Text Line: Text HOME to 741741\n\n";
+        }
+
+        // Print selected recommendations
+        for (size_t i = 0; i < selectedRecommendations.size(); ++i) {
+            cout << i + 1 << ". " << selectedRecommendations[i] << endl;
+        }
+    }
+
+    void provideAnxietyRecommendations(int score) {
+        cout << "\n=== Anxiety Recommendations ===\n";
+        
+        // Dynamic recommendation system
+        if (score <= 4) {
+            cout << "Your anxiety level is minimal. Continue maintaining good mental health practices.\n";
+            return;
+        }
+
+        // Combine all recommendation types
+        vector<string> allRecommendations;
+        allRecommendations.insert(allRecommendations.end(), 
+            coping_strategies.begin(), coping_strategies.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            therapy_options.begin(), therapy_options.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            alternative_treatments.begin(), alternative_treatments.end());
+        allRecommendations.insert(allRecommendations.end(), 
+            medication_options.begin(), medication_options.end());
+
+        vector<string> selectedRecommendations;
+        if (score > 4 && score <= 9) {
+            cout << "Mild Anxiety: One recommended approach:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 1);
+        } else if (score > 9 && score <= 14) {
+            cout << "Moderate Anxiety: Two recommended approaches:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 2);
+        } else if (score > 14 && score < 20) {
+            cout << "Severe Anxiety: Three recommended approaches:\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 3);
+        } else {
+            cout << "!!! SEVERE ANXIETY DETECTED !!!\n";
+            selectedRecommendations = getRandomRecommendations(allRecommendations, 4);
+            cout << "URGENT professional mental health intervention required.\n";
+            cout << "Emergency support:\n";
+            cout << "Anxiety and Depression Association of America: 240-485-1001\n";
+            cout << "Crisis Text Line: Text HOME to 741741\n\n";
+        }
+
+        // Print selected recommendations
+        for (size_t i = 0; i < selectedRecommendations.size(); ++i) {
+            cout << i + 1 << ". " << selectedRecommendations[i] << endl;
+        }
+    }
+
+public:
+    void mentalHealthAssessment() {
+        cout << "=== Comprehensive Mental Health Screening ===\n";
+        cout << "Research-Based Assessment Inspired by PHQ-9 and GAD-7 Methodologies\n\n";
+
+        cout << "DEPRESSION SCREENING:\n";
+        int depressionScore = assessMentalHealthSection(DEPRESSION_QUESTIONS, "Depression");
+        cout << "\nDepression Level: " << DEPRESSION_LEVELS.lower_bound(depressionScore)->second 
+             << " (Score: " << depressionScore << ")\n";
+        provideDepessionRecommendations(depressionScore);
+
+        cout << "\nANXIETY SCREENING:\n";
+        int anxietyScore = assessMentalHealthSection(ANXIETY_QUESTIONS, "Anxiety");
+        cout << "\nAnxiety Level: " << ANXIETY_LEVELS.lower_bound(anxietyScore)->second 
+             << " (Score: " << anxietyScore << ")\n";
+        provideAnxietyRecommendations(anxietyScore);
+    }
+
+    void run() {
+        cout << "Wellness and Mental Health Virtual Assistant V7\n";
+        cout << "Disclaimer: This is a screening tool. Not a substitute for professional medical diagnosis.\n\n";
+        
+        mentalHealthAssessment();
+    }
+};
+
+// Student Grade analyzer
+class Student {
+public:
+    string name;
+    int age;
+    float finalGrade;
+
+    // Constructor
+    Student(const string& n, int a, float grade) 
+        : name(n), age(a), finalGrade(grade) {}
+};
+
+class StudentManagementSystem {
+private:
+    vector<Student> students;
+
+public:
+    // Function to add students and perform analysis in one call
+    void processStudentData() {
+        // Clear any existing students
+        students.clear();
+
+        // Input and process 5 students
+        for (int i = 0; i < 5; ++i) {
+            string name, ageStr, gradeStr;
+            int age = 0;
+            float grade = 0.0f;
+
+            cout << "Enter details for student " << (i+1) << ":\n";
+            
+            // Get name with clear buffer
+            cout << "Name: ";
+            getline(cin >> ws, name);
+
+            // Get age with input validation
+            while (true) {
+                cout << "Age: ";
+                getline(cin >> ws, ageStr);
+                istringstream ageStream(ageStr);
+                if (ageStream >> age && ageStream.eof()) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a valid integer for age.\n";
+            }
+
+            // Get grade with input validation
+            while (true) {
+                cout << "Final Grade: ";
+                getline(cin >> ws, gradeStr);
+                istringstream gradeStream(gradeStr);
+                if (gradeStream >> grade && gradeStream.eof()) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a valid number for grade.\n";
+            }
+
+            // Add student to vector
+            students.emplace_back(name, age, grade);
+        }
+
+        // Display student information
+        displayStudentInfo();
+
+        // Perform grade analysis
+        performGradeAnalysis();
+    }
+
+private:
+    void displayStudentInfo() {
+        cout << "\n--- Student Information ---\n";
+        for (const auto& student : students) {
+            cout << "Name: " << student.name 
+                      << ", Age: " << student.age 
+                      << ", Final Grade: " << fixed << setprecision(2) << student.finalGrade << endl;
+        }
+    }
+
+    void performGradeAnalysis() {
+        if (students.empty()) {
+            cout << "No students to analyze.\n";
+            return;
+        }
+
+        // Calculate average grade
+        float totalGrade = 0.0f;
+        for (const auto& student : students) {
+            totalGrade += student.finalGrade;
+        }
+        float averageGrade = totalGrade / students.size();
+
+        cout << "\n--- Grade Analysis ---\n";
+        cout << "Average Grade: " << fixed << setprecision(2) << averageGrade << endl;
+
+        // Find highest and lowest grades
+        auto highestGradeStudent = max_element(students.begin(), students.end(), 
+            [](const Student& a, const Student& b) { return a.finalGrade < b.finalGrade; });
+
+        auto lowestGradeStudent = min_element(students.begin(), students.end(), 
+            [](const Student& a, const Student& b) { return a.finalGrade < b.finalGrade; });
+
+        cout << "Highest Grade: " << highestGradeStudent->name 
+                  << " (Grade: " << fixed << setprecision(2) << highestGradeStudent->finalGrade << ")" << endl;
+        
+        cout << "Lowest Grade: " << lowestGradeStudent->name 
+                  << " (Grade: " << fixed << setprecision(2) << lowestGradeStudent->finalGrade << ")" << endl;
+    }
+};
+
+// Product inventory management system
+class Product {
+public:
+    string name;
+    int quantity;
+    float price;
+
+    // Constructor
+    Product(const string& n, int qty, float p) 
+        : name(n), quantity(qty), price(p) {}
+};
+
+class InventoryManagementSystem {
+private:
+    vector<Product> inventory;
+
+public:
+    // Comprehensive method to manage inventory in one call
+    void manageInventory() {
+        // Clear existing inventory
+        inventory.clear();
+
+        char continueAdding;
+        do {
+            // Input product details with validation
+            string name, quantityStr, priceStr;
+
+            // Get product name
+            cout << "Enter product name: ";
+            getline(cin >> ws, name);
+
+            // Get quantity with input validation
+            int quantity = 0;
+            while (true) {
+                cout << "Enter quantity: ";
+                getline(cin >> ws, quantityStr);
+                istringstream quantityStream(quantityStr);
+                if (quantityStream >> quantity && quantityStream.eof() && quantity >= 0) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a non-negative integer.\n";
+            }
+
+            // Get price with input validation
+            float price = 0.0f;
+            while (true) {
+                cout << "Enter price: ";
+                getline(cin >> ws, priceStr);
+                istringstream priceStream(priceStr);
+                if (priceStream >> price && priceStream.eof() && price >= 0) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a non-negative number.\n";
+            }
+
+            // Add product to inventory
+            inventory.emplace_back(name, quantity, price);
+
+            // Ask if user wants to add more products
+            cout << "Add another product? (y/n): ";
+            cin >> continueAdding;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        } while (continueAdding == 'y' || continueAdding == 'Y');
+
+        // Display inventory and calculate total value
+        displayInventory();
+    }
+
+private:
+    void displayInventory() {
+        if (inventory.empty()) {
+            cout << "Inventory is empty.\n";
+            return;
+        }
+
+        // Display product details
+        cout << "\n--- Current Inventory ---\n";
+        cout << left << setw(20) << "Product Name" 
+                  << setw(10) << "Quantity" 
+                  << setw(10) << "Price" 
+                  << "Total Value\n";
+        cout << string(40, '-') << endl;
+
+        // Calculate and display total inventory value
+        float totalInventoryValue = 0.0f;
+        for (const auto& product : inventory) {
+            float productValue = product.quantity * product.price;
+            totalInventoryValue += productValue;
+
+            cout << left << setw(20) << product.name 
+                      << setw(10) << product.quantity 
+                      << fixed << setprecision(2) 
+                      << setw(10) << product.price 
+                      << productValue << endl;
+        }
+
+        // Display total inventory value
+        cout << "\nTotal Inventory Value: $" 
+                  << fixed << setprecision(2) 
+                  << totalInventoryValue << endl;
+    }
+};
 
 
+// Library Management System
+class Book {
+public:
+    string title;
+    string author;
+    int publicationYear;
+
+    // Constructor
+    Book(const string& t, const string& a, int year) 
+        : title(t), author(a), publicationYear(year) {}
+};
+
+class LibraryManagementSystem {
+private:
+    vector<Book> library;
+
+public:
+    // Comprehensive method to manage library in one call
+    void managLibrary() {
+        // Clear existing library
+        library.clear();
+
+        char continueAdding;
+        do {
+            // Input book details with validation
+            string title, author, yearStr;
+
+            // Get book title
+            cout << "Enter book title: ";
+            getline(cin >> ws, title);
+
+            // Get book author
+            cout << "Enter book author: ";
+            getline(cin >> ws, author);
+
+            // Get publication year with input validation
+            int publicationYear = 0;
+            while (true) {
+                cout << "Enter publication year: ";
+                getline(cin >> ws, yearStr);
+                istringstream yearStream(yearStr);
+                if (yearStream >> publicationYear && yearStream.eof()) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a valid year.\n";
+            }
+
+            // Add book to library
+            library.emplace_back(title, author, publicationYear);
+
+            // Ask if user wants to add more books
+            cout << "Add another book? (y/n): ";
+            cin >> continueAdding;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        } while (continueAdding == 'y' || continueAdding == 'Y');
+
+        // Display books published after 2000
+        displayBooksAfter2000();
+
+        // Search for a book
+        searchBookByTitle();
+    }
+
+private:
+    void displayBooksAfter2000() {
+        vector<Book> modernBooks;
+        
+        // Filter books published after 2000
+        copy_if(library.begin(), library.end(), back_inserter(modernBooks), 
+            [](const Book& book) { return book.publicationYear > 2000; });
+
+        if (modernBooks.empty()) {
+            cout << "\nNo books published after 2000 found.\n";
+            return;
+        }
+
+        cout << "\n--- Books Published After 2000 ---\n";
+        cout << left 
+                  << setw(30) << "Title" 
+                  << setw(25) << "Author" 
+                  << "Publication Year\n";
+        cout << string(60, '-') << endl;
+
+        for (const auto& book : modernBooks) {
+            cout << left 
+                      << setw(30) << book.title 
+                      << setw(25) << book.author 
+                      << book.publicationYear << endl;
+        }
+    }
+
+    void searchBookByTitle() {
+        if (library.empty()) {
+            cout << "\nLibrary is empty.\n";
+            return;
+        }
+
+        // Get search title
+        string searchTitle;
+        cout << "\nEnter a book title to search: ";
+        getline(cin >> ws, searchTitle);
+
+        // Convert search title to lowercase for case-insensitive search
+        transform(searchTitle.begin(), searchTitle.end(), searchTitle.begin(), 
+            [](unsigned char c){ return tolower(c); });
+
+        // Search for the book
+        auto it = find_if(library.begin(), library.end(), 
+            [&searchTitle](const Book& book) {
+                string lowercaseTitle = book.title;
+                transform(lowercaseTitle.begin(), lowercaseTitle.end(), lowercaseTitle.begin(), 
+                    [](unsigned char c){ return tolower(c); });
+                return lowercaseTitle.find(searchTitle) != string::npos;
+            });
+
+        // Display search result
+        if (it != library.end()) {
+            cout << "Book Found:\n";
+            cout << "Title: " << it->title << "\n";
+            cout << "Author: " << it->author << "\n";
+            cout << "Publication Year: " << it->publicationYear << endl;
+        } else {
+            cout << "Book not found in the library." << endl;
+        }
+    }
+};
+
+// Employee Management System
+class Employee {
+public:
+    string name;
+    string position;
+    float salary;
+
+    // Constructor
+    Employee(const string& n, const string& pos, float sal) 
+        : name(n), position(pos), salary(sal) {}
+};
+
+class EmployeeManagementSystem {
+private:
+    vector<Employee> employees;
+
+public:
+    // Comprehensive method to manage employees in one call
+    void manageEmployees() {
+        // Clear existing employees
+        employees.clear();
+
+        char continueAdding;
+        do {
+            // Input employee details with validation
+            string name, position, salaryStr;
+
+            // Get employee name
+            cout << "Enter employee name: ";
+            getline(cin >> ws, name);
+
+            // Get employee position
+            cout << "Enter employee position: ";
+            getline(cin >> ws, position);
+
+            // Get salary with input validation
+            float salary = 0.0f;
+            while (true) {
+                cout << "Enter employee salary: $";
+                getline(cin >> ws, salaryStr);
+                istringstream salaryStream(salaryStr);
+                if (salaryStream >> salary && salaryStream.eof() && salary >= 0) {
+                    break;
+                }
+                cout << "Invalid input. Please enter a non-negative number.\n";
+            }
+
+            // Add employee to vector
+            employees.emplace_back(name, position, salary);
+
+            // Ask if user wants to add more employees
+            cout << "Add another employee? (y/n): ";
+            cin >> continueAdding;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        } while (continueAdding == 'y' || continueAdding == 'Y');
+
+        // Display all employees
+        displayEmployees();
+
+        // Calculate and display average salary
+        calculateAverageSalary();
+
+        // Display employees earning above average
+        displayHighEarners();
+
+        // Option to remove an employee
+        removeEmployee();
+    }
+
+private:
+    void displayEmployees() {
+        if (employees.empty()) {
+            cout << "\nNo employees in the system.\n";
+            return;
+        }
+
+        cout << "\n--- Current Employees ---\n";
+        cout << left 
+                  << setw(25) << "Name" 
+                  << setw(20) << "Position" 
+                  << "Salary\n";
+        cout << string(50, '-') << endl;
+
+        for (const auto& employee : employees) {
+            cout << left 
+                      << setw(25) << employee.name 
+                      << setw(20) << employee.position 
+                      << "$" << fixed << setprecision(2) << employee.salary << endl;
+        }
+    }
+
+    void calculateAverageSalary() {
+        if (employees.empty()) return;
+
+        // Calculate total salary
+        float totalSalary = accumulate(employees.begin(), employees.end(), 0.0f, 
+            [](float sum, const Employee& emp) { return sum + emp.salary; });
+
+        // Calculate average salary
+        float averageSalary = totalSalary / employees.size();
+
+        cout << "\nAverage Salary: $" 
+                  << fixed << setprecision(2) << averageSalary << endl;
+    }
+
+    void displayHighEarners() {
+        if (employees.empty()) return;
+
+        // Calculate average salary
+        float totalSalary = accumulate(employees.begin(), employees.end(), 0.0f, 
+            [](float sum, const Employee& emp) { return sum + emp.salary; });
+        float averageSalary = totalSalary / employees.size();
+
+        // Filter and display high earners
+        vector<Employee> highEarners;
+        copy_if(employees.begin(), employees.end(), back_inserter(highEarners), 
+            [averageSalary](const Employee& emp) { return emp.salary > averageSalary; });
+
+        if (highEarners.empty()) {
+            cout << "No employees earning above average salary.\n";
+            return;
+        }
+
+        cout << "\n--- Employees Earning Above Average ---\n";
+        cout << left 
+                  << setw(25) << "Name" 
+                  << setw(20) << "Position" 
+                  << "Salary\n";
+        cout << string(50, '-') << endl;
+
+        for (const auto& employee : highEarners) {
+            cout << left 
+                      << setw(25) << employee.name 
+                      << setw(20) << employee.position 
+                      << "$" << fixed << setprecision(2) << employee.salary << endl;
+        }
+    }
+
+    void removeEmployee() {
+        if (employees.empty()) return;
+
+        // Get employee name to remove
+        string nameToRemove;
+        cout << "\nEnter the name of the employee to remove: ";
+        getline(cin >> ws, nameToRemove);
+
+        // Convert search name to lowercase for case-insensitive search
+        transform(nameToRemove.begin(), nameToRemove.end(), nameToRemove.begin(), 
+            [](unsigned char c){ return tolower(c); });
+
+        // Find and remove the employee
+        auto it = find_if(employees.begin(), employees.end(), 
+            [&nameToRemove](const Employee& emp) {
+                string lowercaseName = emp.name;
+                transform(lowercaseName.begin(), lowercaseName.end(), lowercaseName.begin(), 
+                    [](unsigned char c){ return tolower(c); });
+                return lowercaseName.find(nameToRemove) != string::npos;
+            });
+
+        // Display removal result
+        if (it != employees.end()) {
+            cout << "Removed employee: " << it->name << endl;
+            employees.erase(it);
+        } else {
+            cout << "Employee not found." << endl;
+        }
+    }
+};
 
 
 // Function prototypes
@@ -823,7 +1552,8 @@ void multiplyArraysWithPointers();
 void divideArraysWithPointers();
 void moduloArraysWithPointers();
 // CSV file reading and operation
-void processCsvData();
+void processCsvData(bool fromFile);
+void processSalesData(bool fromFile);
 
 const int SIZE = 6; // Size of the arrays
 
@@ -839,6 +1569,12 @@ int main() {
 	TrickOrTreat game;
 	WellnessBot bot;
     string filename;
+    char choice;
+    EnhancedWellnessBot bot2;
+    StudentManagementSystem sms;
+    InventoryManagementSystem ims;
+    LibraryManagementSystem lms;
+    EmployeeManagementSystem ems;
 	
 
     do {
@@ -1111,7 +1847,8 @@ int main() {
 				cout << "13. Selection Sort [#43]\n";
 				cout << "14. Merge Sort [#44]\n";
 				cout << "15. Timezone Conversion [#48]\n";
-                cout << "16. CSV Reader and Organizer [#72]\n";
+                cout << "16. CSV Age Adder [#72]\n";
+                cout << "17. CSV Sales Calculator [#73]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -1178,7 +1915,32 @@ int main() {
 						timezoneConversion();
 						break;
                     case 16:
-                        processCsvData();
+                        // Ask user whether they want to input data manually or use a file
+                        cout << "Do you want to (M)anually enter CSV data or (F)ill from a (F)ile? (M/F): ";
+                        cin >> choice;
+                        cin.ignore();  // Ignore leftover newline after the character input
+
+                        if (choice == 'M' || choice == 'm') {
+                            processCsvData(false);  // Call function with `false` to enter data manually
+                        } else if (choice == 'F' || choice == 'f') {
+                            processCsvData(true);   // Call function with `true` to load data from file
+                        } else {
+                            cout << "Invalid option. Please choose 'M' or 'F'.\n";
+                        }
+                        break;
+                    case 17:
+                        // Ask user whether they want to input data manually or use a file
+                        cout << "Do you want to (M)anually enter CSV data or (F)ill from a (F)ile? (M/F): ";
+                        cin >> choice;
+                        cin.ignore();  // Ignore leftover newline after the character input
+
+                        if (choice == 'M' || choice == 'm') {
+                            processSalesData(false);  // Call function with `false` to enter data manually
+                        } else if (choice == 'F' || choice == 'f') {
+                            processSalesData(true);   // Call function with `true` to load data from file
+                        } else {
+                            cout << "Invalid option. Please choose 'M' or 'F'.\n";
+                        }
                         break;
                     default:
                         cout << "Invalid choice.\n" ;
@@ -1194,6 +1956,11 @@ int main() {
 				cout << "6. Minesweeper [#60]\n";
 				cout << "7. Demonstrate pointers [#65]\n";
 				cout << "8. Wellness Bot [#71]\n";
+                cout << "9. Mental Wellness Bot [#80]\n";
+                cout << "10. Student Management System [#74-75]\n";
+                cout << "11. Product Inventory Management System [#76]\n";
+                cout << "12. Library Management System [#77]\n";
+                cout << "13. Employee Management System [#78]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -1221,6 +1988,21 @@ int main() {
 					case 8:
 						WellnessBot().run();
 						break;
+                    case 9:
+                        bot2.run();
+                        break;
+                    case 10:
+                        sms.processStudentData();
+                        break;
+                    case 11:
+                        ims.manageInventory();
+                        break;
+                    case 12:
+                        lms.managLibrary();
+                        break;
+                    case 13:
+                        ems.manageEmployees();
+                        break;
                     default:
                         cout << "Invalid choice.\n";
                 }
@@ -2394,42 +3176,67 @@ void moduloArraysWithPointers() {
     cout << endl;
 }
 
-// Read and process CSV files
-void processCsvData() {
+// Function to process CSV data entered via cin or from an external file
+void processCsvData(bool fromFile) {
     string csvInput, line;
     vector<string> rows;
+    vector<pair<string, int>> validEntries;  // Stores valid entries (name, age)
 
-    // Prompt user for CSV data input
-    cout << "Enter CSV data (end with an empty line):\n";
-    while (true) {
-        getline(cin, line);
-        if (line.empty()) break;
-        rows.push_back(line);
-    }
+    if (fromFile) {
+        // User provides file name to read from
+        string filename;
+        cout << "Enter the CSV file name: ";
+        cin >> filename;
+        cin.ignore();  // To ignore the leftover newline character from previous input
 
-    if (rows.empty()) {
-        cout << "No data provided.\n";
-        return;
+        ifstream inputFile(filename);
+
+        // Check if the file opened successfully
+        if (!inputFile.is_open()) {
+            cout << "Error: Could not open the file " << filename << endl;
+            return;
+        }
+
+        // Read the file line by line
+        while (getline(inputFile, line)) {
+            rows.push_back(line);
+        }
+
+        inputFile.close();
+
+        if (rows.empty()) {
+            cout << "The file is empty or contains no data.\n";
+            return;
+        }
+    } else {
+        // User manually enters CSV data via cin
+        cout << "Enter CSV data like so [Name, Age] (end with an empty line):\n";
+        while (true) {
+            getline(cin, line);
+            if (line.empty()) break;
+            rows.push_back(line);
+        }
+
+        if (rows.empty()) {
+            cout << "No data provided.\n";
+            return;
+        }
     }
 
     // Process the CSV data
-    int totalAge = 0, validEntries = 0;
+    int totalAge = 0, validEntriesCount = 0;
 
     for (size_t i = 0; i < rows.size(); ++i) {
         stringstream ss(rows[i]);
         string name, ageStr;
-
-        if (i == 0) {
-            // Skip the header row
-            continue;
-        }
 
         // Extract name and age from the current row
         if (getline(ss, name, ',') && getline(ss, ageStr)) {
             try {
                 int age = stoi(ageStr);
                 totalAge += age;
-                validEntries++;
+                validEntries.push_back(make_pair(name, age));
+                validEntriesCount++;
             } catch (invalid_argument&) {
                 cout << "Invalid age value in row " << i + 1 << ": " << rows[i] << "\n";
             } catch (out_of_range&) {
@@ -2442,9 +3249,133 @@ void processCsvData() {
 
     // Print the summary
     cout << "Total sum of ages: " << totalAge << "\n";
-    cout << "Number of valid entries processed: " << validEntries << "\n";
+    cout << "Number of valid entries processed: " << validEntriesCount << "\n";
+
+    // Print the valid entries
+    if (validEntriesCount > 0) {
+        cout << "\nValid entries:\n";
+        for (const auto& entry : validEntries) {
+            cout << entry.first << ", " << entry.second << endl;
+        }
+    } else {
+        cout << "No valid entries found.\n";
+    }
 }
 
+// Function to process sales data entered via cin or from an external file
+void processSalesData(bool fromFile) {
+    string line;
+    vector<string> rows;
+    vector<pair<string, vector<int>>> validEntries;  // Stores valid entries (product name, sales for 12 months)
+
+    if (fromFile) {
+        // User provides file name to read from
+        string filename;
+        cout << "Enter the CSV file name: ";
+        cin >> filename;
+        cin.ignore();  // To ignore the leftover newline character from previous input
+
+        ifstream inputFile(filename);
+
+        // Check if the file opened successfully
+        if (!inputFile.is_open()) {
+            cout << "Error: Could not open the file " << filename << endl;
+            return;
+        }
+
+        // Read the file line by line
+        while (getline(inputFile, line)) {
+            rows.push_back(line);
+        }
+
+        inputFile.close();
+
+        if (rows.empty()) {
+            cout << "The file is empty or contains no data.\n";
+            return;
+        }
+    } else {
+        // User manually enters CSV data via cin
+        cout << "Enter CSV data like so [Product X, Jan Sales, Feb Sales, Mar sales, Apr sales,\n\tMay sales, June sales, July sales, August sales,\n\tSeptember sales, October sales, November sales, December sales](end with an empty line):\n";
+        while (true) {
+            getline(cin, line);
+            if (line.empty()) break;
+            rows.push_back(line);
+        }
+
+        if (rows.empty()) {
+            cout << "No data provided.\n";
+            return;
+        }
+    }
+
+    // Process the sales data
+    int validEntriesCount = 0;
+    vector<string> months = {
+        "January", "February", "March", "April", "May", "June", "July", "August", 
+        "September", "October", "November", "December"
+    };
+
+    // Process each row (skip the first line if it's a header)
+    for (size_t i = 0; i < rows.size(); ++i) {
+        stringstream ss(rows[i]);
+        string product;
+        string salesStr;
+        vector<int> sales;
+
+        // Extract product name from the current row
+        if (getline(ss, product, ',')) {
+            bool valid = true;
+
+            // Extract sales for each month and check validity
+            for (size_t j = 0; j < 12; ++j) {
+                if (getline(ss, salesStr, ',')) {
+                    try {
+                        int salesValue = stoi(salesStr);
+                        sales.push_back(salesValue);
+                    } catch (invalid_argument&) {
+                        cout << "Invalid sales value for " << product << " in month " << months[j] << " (row " << i + 1 << ").\n";
+                        valid = false;
+                        break;
+                    } catch (out_of_range&) {
+                        cout << "Sales value out of range for " << product << " in month " << months[j] << " (row " << i + 1 << ").\n";
+                        valid = false;
+                        break;
+                    }
+                } else {
+                    cout << "Missing sales data for " << product << " in month " << months[j] << " (row " << i + 1 << ").\n";
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid) {
+                validEntries.push_back(make_pair(product, sales));
+                validEntriesCount++;
+            }
+        } else {
+            cout << "Malformed row " << i + 1 << ": " << rows[i] << "\n";
+        }
+    }
+
+    // Print the summary
+    cout << "\nAverage sales for each product:\n";
+    for (const auto& entry : validEntries) {
+        const string& productName = entry.first;
+        const vector<int>& sales = entry.second;
+        int totalSales = 0;
+
+        for (int sale : sales) {
+            totalSales += sale;
+        }
+
+        double averageSales = static_cast<double>(totalSales) / sales.size();
+        cout << "Average sales for " << productName << ": " << averageSales << endl;
+    }
+
+    // Print the summary of how many valid entries were processed
+    cout << "\nNumber of valid products processed: " << validEntriesCount << endl;
+}
 
 // Helper functions for T-Shirt Customization
 string getInput(const string& prompt) {
