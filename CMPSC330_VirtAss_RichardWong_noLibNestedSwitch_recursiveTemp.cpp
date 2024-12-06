@@ -1503,6 +1503,7 @@ private:
         int silliness = 0;
         int weirdness = 0;
         int randomJokePoints = 0;
+        vector<string> exploredAreas;
     };
 
     Player player;
@@ -1518,7 +1519,27 @@ private:
         "What do you call a fake noodle? An impasta!",
         "Why did the math book look so sad? Because it had too many problems.",
         "What do you call a boomerang that doesn't come back? A stick.",
-        "Why did the cookie go to the doctor? Because it was feeling crumbly!"
+        "Why did the cookie go to the doctor? Because it was feeling crumbly!",
+        "Why don't skeletons fight each other? They don't have the guts!",
+        "What did the grape do when it got stepped on? Nothing but let out a little wine!",
+        "Why did the coffee file a police report? It got mugged!",
+        "How do you organize a space party? You planet!",
+        "What's orange and sounds like a parrot? A carrot!",
+        "What did the ocean say to the beach? Nothing, it just waved!",
+        "Why don't oysters share their pearls? Because they're shellfish!",
+        "What did the duck say when it bought lipstick? Put it on my bill!",
+        "Why do cows wear bells? Because their horns don't work!",
+        "What do you call fake spaghetti? An impasta!",
+        "I couldn't figure out how to put my seatbelt on. Then it clicked!",
+        "What did one hat say to the other? Stay here, I'm going on ahead!",
+        "Why don't some couples go to the gym? Because some relationships don't work out!",
+        "What's brown and sticky? A stick!",
+        "Why did the bicycle fall over? It was two-tired!",
+        "I'm reading a book about anti-gravity. It's impossible to put down!",
+        "Why was the math book sad? It had too many problems!",
+        "What's a skeleton's least favorite room? The living room!",
+        "Why was the computer cold? It left its Windows open!",
+        "Why don't scientists trust stairs? Because they're always up to something!"
     };
 
     vector<string> easterEggs = {
@@ -1527,7 +1548,28 @@ private:
         "You discover a talking potato chip.",
         "A wild dad joke generator activates!",
         "You've unlocked the secret realm of maximum goofiness!"
+        "You found a rubber duck that quacks riddles!",
+        "A random potato appears and asks for your help!",
+        "You discover a secret dance party hosted by flamingos!",
+        "You find a treasure chest full of invisible coins!",
+        "A magical unicorn gives you a high-five!",
+        "A glowing jellyfish offers you a ride through the clouds!",
+        "You stumble upon a giant pancake floating in the air!",
+        "A frog hands you a map to the 'Cave of Unusual Snacks'!",
+        "You find a time-traveling toaster that makes breakfast for the past!",
+        "A mysterious portal opens to a world made entirely of cheese!",
+        "A rainbow-colored squirrel offers you a snack!",
+        "You find a book titled 'How to Speak to Inanimate Objects'!",
+        "You discover a secret room full of dancing tacos!",
+        "A cactus in a top hat challenges you to a staring contest!",
+        "A penguin wearing a bowtie asks if you want to go ice fishing!",
+        "You meet a wizard who only speaks in puns!",
+        "A cloud with a face challenges you to a joke-off!",
+        "You encounter a flying rubber chicken with sunglasses!",
+        "A fortune cookie offers you a life-changing riddle!",
+        "A frog starts singing opera in a pond!"
     };
+
 
 public:
     // Constructor to seed random number generator
@@ -1544,6 +1586,7 @@ public:
 
         // Get player name with a twist
         getPlayerName();
+        
 
         // Start the silly adventure
         beginAdventure();
@@ -1567,35 +1610,164 @@ private:
         cout << "Greetings, " << player.name << "! Your adventure of absurdity begins!\n";
     }
 
-    void beginAdventure() {
-        cout << "\n🌈 Chapter 1: The Realm of Randomness 🌈\n";
+    
+
+    void exploreArea() {
+        vector<string> areas = {
+            "Enchanted Forest of Giggles",
+            "Valley of Infinite Puns",
+            "Mountain of Mischief",
+            "Swamp of Quirky Critters",
+            "Castle of Comic Chaos",
+            "The Forest of Foolishness",
+            "The Beach of Bizarre",
+            "The Desert of Dad Jokes",
+            "The Mountain of Madness",
+            "The Cavern of Comedy"
+        };
+
+        cout << "\n📍 Where would you like to explore?\n";
+        for (size_t i = 0; i < areas.size(); ++i) {
+            cout << i + 1 << ". " << areas[i] << endl;
+        }
+        cout << "Enter the number of your choice: ";
         
-        // Series of random events
-        for (int i = 0; i < 5; ++i) {
+        int choice;
+        cin >> choice;
+
+        if (choice >= 1 && choice <= static_cast<int>(areas.size())) {
+            cout << "\n🚶 Heading to the " << areas[choice - 1] << "...\n";
+            performRandomEventsInArea(areas[choice - 1]);
+        } else {
+            cout << "Invalid choice! A random area will be chosen for you.\n";
+            uniform_int_distribution<int> areaDist(0, areas.size() - 1);
+            performRandomEventsInArea(areas[areaDist(rng)]);
+        }
+    }
+
+     void performRandomEventsInArea(const string& areaName) {
+        cout << "🌟 Welcome to the " << areaName << "!\n";
+
+        // Avoid duplicate entries in the explored list
+        if (find(player.exploredAreas.begin(), player.exploredAreas.end(), areaName) == player.exploredAreas.end()) {
+            player.exploredAreas.push_back(areaName);
+        }
+        
+        // Determine the number of events (0–2)
+        uniform_int_distribution<int> eventCountDist(0, 2);
+        int eventCount = eventCountDist(rng);
+
+        cout << "🌀 You will experience " << eventCount << " random event(s) here.\n";
+
+
+        for (int i = 0; i < eventCount; ++i) {
             performRandomEvent();
             this_thread::sleep_for(chrono::milliseconds(500));
         }
     }
 
+    void quizEvent() {
+        vector<pair<string, int>> quizzes = {
+            {"What is 5 + 3?", 8},
+            {"How many legs does a spider have?", 8},
+            {"What is 7 * 6?", 42},
+            {"What is the square root of 49?", 7},
+            {"How many planets are in our solar system? (as of 2023)", 8},
+            {"What is 2 + 2?", 4},
+            {"How many sides does a triangle have?", 3},
+            {"What is the square of 5?", 25},
+            {"What is 9 divided by 3?", 3},
+            {"How many hours are in a day?", 24},
+            {"What is 100 minus 40?", 60},
+            {"What is 3 * 3?", 9},
+            {"How many continents are there?", 7},
+            {"What is the capital of France?", 1}, // Answering with number of options
+            {"What is 10 - 2?", 8},
+            {"What is 8 + 4?", 12},
+            {"What is 6 * 7?", 42},
+            {"How many days are in a leap year?", 366},
+            {"How many weeks are in a year?", 52},
+            {"How many legs does an octopus have?", 8},
+            {"What is the square root of 64?", 8},
+            {"What is 20 + 30?", 50},
+            {"What is the number of hours in a week?", 168},
+            {"What is 15 divided by 5?", 3},
+            {"What is 4 * 4?", 16}
+        };
+
+        uniform_int_distribution<int> quizDist(0, quizzes.size() - 1);
+        int quizIndex = quizDist(rng);
+
+        cout << "🧠 QUIZ TIME! 🧠\n";
+        cout << quizzes[quizIndex].first << endl;
+        cout << "Enter your answer: ";
+
+        int playerAnswer;
+        cin >> playerAnswer;
+
+        if (playerAnswer == quizzes[quizIndex].second) {
+            cout << "🎉 Correct! You've earned some brainy points!\n";
+            player.randomJokePoints += 15; // Reward with points
+        } else {
+            cout << "❌ Oops! The correct answer was " << quizzes[quizIndex].second << ".\n";
+            player.silliness += 5; // Small penalty or consolation reward
+        }
+    }
+
+    void beginAdventure() {
+        cout << "\n🌈 Chapter 1: Choose Your Path 🌈\n";
+
+        char userChoice;
+        bool continueExploring = true;
+
+        while (continueExploring) {
+            cout << "\nWould you like to explore an area? (y/n): ";
+            cin >> userChoice;
+
+            if (tolower(userChoice) == 'y') {
+                exploreArea();
+            } else {
+                cout << "\n🎲 Let randomness guide your fate!\n";
+                for (int i = 0; i < 5; ++i) {
+                    performRandomEvent();
+                    this_thread::sleep_for(chrono::milliseconds(500));
+                }
+            }
+
+            // Ask the player if they want to continue
+            cout << "\nWould you like to continue exploring? (y/n): ";
+            cin >> userChoice;
+            continueExploring = (tolower(userChoice) == 'y');
+        }
+
+        cout << "\n🏁 You've chosen to end your adventure. On to the final chapter...\n";
+    }
+
+    
+
     void performRandomEvent() {
-        uniform_int_distribution<int> eventDist(1, 5);
+        uniform_int_distribution<int> eventDist(1, 6); // Add 6 for the new quiz event
         int event = eventDist(rng);
 
+        cout << "\n🎭 A random event occurs:\n";
         switch (event) {
-            case 1: 
-                telljoke(); 
+            case 1:
+                telljoke();
                 break;
-            case 2: 
-                discoverEasterEgg(); 
+            case 2:
+                discoverEasterEgg();
                 break;
-            case 3: 
-                randomChallenge(); 
+            case 3:
+                randomChallenge();
                 break;
-            case 4: 
-                magicalTransformation(); 
+            case 4:
+                magicalTransformation();
                 break;
-            case 5: 
-                encounterWeirdCreature(); 
+            case 5:
+                encounterWeirdCreature();
+                break;
+            case 6:
+                quizEvent();
                 break;
         }
     }
@@ -1626,6 +1798,26 @@ private:
             "Tell a story using only movie quotes!",
             "Dance like nobody's watching (but everyone is)!",
             "Convince an imaginary friend to do your homework!"
+            "Do 10 jumping jacks while making animal noises!",
+            "Pretend to be a pirate and shout 'Arr!' for 30 seconds!",
+            "Describe your day using only emojis!",
+            "Talk like a robot for the next 2 minutes!",
+            "Draw a picture of your favorite fruit with your non-dominant hand!",
+            "Make up a short song about socks!",
+            "Act like a sloth for the next 1 minute!",
+            "Give your best impression of a chicken crossing the road!",
+            "Pretend you're an astronaut and explain how to make pizza in space!",
+            "Do an impression of your favorite superhero!",
+            "Pretend you are a teacher and give a lecture on the importance of naps!",
+            "Explain how to do your favorite dance move in the most complicated way possible!",
+            "Pretend you're a famous movie director and tell a short story about a banana!",
+            "Dance like you're in a music video for the next 30 seconds!",
+            "Do your best impression of a robot malfunctioning!",
+            "Create a funny story about a talking spoon!",
+            "Pretend you're a mime trapped in a box for 1 minute!",
+            "Act like a cat for the next 2 minutes!",
+            "Do your best impression of a wizard casting a spell!",
+            "Explain how to do a cartwheel, but only use song lyrics!"
         };
 
         uniform_int_distribution<int> challengeDist(0, challenges.size() - 1);
@@ -1642,7 +1834,27 @@ private:
             "Congratulations! You're now a talking traffic cone!",
             "You're temporarily a wizard who can only cast dad jokes!",
             "You've become a motivational speaker for houseplants!",
-            "You are now fluent in the language of rubber chickens!"
+            "You are now fluent in the language of rubber chickens!",
+            "You've been transformed into a dancing taco!",
+            "You are now a magical potato with wizard powers!",
+            "You've become a living balloon animal!",
+            "You are now a famous rock star with a crowd of adoring fans!",
+            "You've turned into a balloon animal with a top hat!",
+            "Congratulations! You are now a superhero who can only speak in puns!",
+            "You've turned into a talking sandwich who loves to sing!",
+            "You are now a walking dictionary who loves to define words!",
+            "You've become a donut with sprinkles and a serious attitude!",
+            "You are now a circus acrobat who can do backflips!",
+            "You've turned into a disco ball that can only play funky music!",
+            "Congratulations! You're a talking plant with all the wisdom of the earth!",
+            "You're now a time-traveling ice cream cone!",
+            "You've become a high-speed race car with a personality of a turtle!",
+            "You are now a superhero who can only solve problems using dad jokes!",
+            "You're now a professional juggler with invisible balls!",
+            "You've transformed into a giant rubber band who bounces everywhere!",
+            "Congratulations! You're a sentient cloud who loves to rain on parades!",
+            "You are now a disco-dancing robot with a heart of gold!",
+            "You've turned into a robot chef who makes gourmet meals!"
         };
 
         uniform_int_distribution<int> transformDist(0, transformations.size() - 1);
@@ -1659,7 +1871,27 @@ private:
             "A philosophical sock puppet!",
             "A stand-up comedian squirrel!",
             "A time-traveling garden gnome!",
-            "A motivational speaking cactus!"
+            "A motivational speaking cactus!",
+            "A dancing llama who speaks fluent Spanish!",
+            "A robot unicorn who can do backflips!",
+            "A dragon who only breathes confetti!",
+            "A giraffe who is also a master of yoga!",
+            "A singing octopus that loves karaoke!",
+            "A ninja hamster who knows kung fu!",
+            "A dancing pineapple who loves to cook!",
+            "A bear who can solve riddles in Morse code!",
+            "A magical koala who can juggle pinecones!",
+            "A flamingo who only speaks in rhymes!",
+            "A cat that can play the piano while wearing sunglasses!",
+            "A bear who does stand-up comedy!",
+            "A chameleon that changes colors based on your mood!",
+            "A magical sloth who can read minds!",
+            "A hedgehog who can do a perfect moonwalk!",
+            "A rhinoceros who is a professional breakdancer!",
+            "A raccoon who loves to bake cookies and sing opera!",
+            "A giraffe who wears a monocle and loves tea parties!",
+            "A zebra who can tell jokes about stripes!",
+            "A talking hedgehog who gives advice on relationships!"
         };
 
         uniform_int_distribution<int> creatureDist(0, creatures.size() - 1);
@@ -1674,6 +1906,15 @@ private:
         cout << "\n🎊 ADVENTURE COMPLETE! 🎊\n";
         cout << "Congratulations, " << player.name << "!\n\n";
 
+        cout << "\n🌍 Areas Explored:\n";
+        if (player.exploredAreas.empty()) {
+            cout << "None! Were you avoiding fun?\n";
+        } else {
+            for (const auto& area : player.exploredAreas) {
+                cout << "- " << area << endl;
+            }
+        }
+
         // Silly score calculation
         int totalScore = player.silliness + player.weirdness + player.randomJokePoints;
 
@@ -1682,7 +1923,7 @@ private:
         cout << "Weirdness Meter: " << player.weirdness << endl;
         cout << "Random Joke Points: " << player.randomJokePoints << endl;
         cout << "Total Absurdity Score: " << totalScore << endl;
-
+        
         // Humorous awards based on score
         if (totalScore < 50) 
             cout << "Award: Rookie Goofball 🧀\n";
