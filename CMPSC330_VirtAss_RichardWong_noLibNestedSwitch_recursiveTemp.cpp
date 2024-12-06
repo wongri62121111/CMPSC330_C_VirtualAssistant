@@ -20,6 +20,10 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <chrono>
+#include <thread>
+
+
 
 
 using namespace std;
@@ -1487,6 +1491,210 @@ private:
     }
 };
 
+// Silly Adventure Game
+class SillyAdventureGame {
+private:
+    // Randomness generator
+    mt19937 rng;
+
+    // Player stats with a comedic twist
+    struct Player {
+        string name;
+        int silliness = 0;
+        int weirdness = 0;
+        int randomJokePoints = 0;
+    };
+
+    Player player;
+
+    // Collection of absolutely absurd jokes and responses
+    vector<string> jokes = {
+        "Why don't scientists trust atoms? Because they make up everything!",
+        "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+        "Why did the scarecrow win an award? Because he was outstanding in his field!",
+        "What do you call a bear with no teeth? A gummy bear!",
+        "Why don't eggs tell jokes? They'd crack each other up!",
+        "I'm afraid for the calendar. Its days are numbered.",
+        "What do you call a fake noodle? An impasta!",
+        "Why did the math book look so sad? Because it had too many problems.",
+        "What do you call a boomerang that doesn't come back? A stick.",
+        "Why did the cookie go to the doctor? Because it was feeling crumbly!"
+    };
+
+    vector<string> easterEggs = {
+        "You found a rubber chicken wearing sunglasses!",
+        "A wild meme appears and dabs at you!",
+        "You discover a talking potato chip.",
+        "A wild dad joke generator activates!",
+        "You've unlocked the secret realm of maximum goofiness!"
+    };
+
+public:
+    // Constructor to seed random number generator
+    SillyAdventureGame() : rng(chrono::steady_clock::now().time_since_epoch().count()) {}
+
+    // Main game method
+    void playAbsurdGame() {
+        // Clear previous game state
+        player = Player();
+
+        // Dramatic game introduction
+        cout << "🎉 WELCOME TO THE MOST RIDICULOUS ADVENTURE EVER! 🎉\n";
+        cout << "Prepare for maximum silliness and unexpected randomness!\n\n";
+
+        // Get player name with a twist
+        getPlayerName();
+
+        // Start the silly adventure
+        beginAdventure();
+
+        // Final score and ridiculous conclusion
+        concludeAdventure();
+    }
+
+private:
+    void getPlayerName() {
+        string input;
+        cout << "Enter your name (or a silly nickname): ";
+        getline(cin >> ws, input);
+
+        // Transform name for extra comedy
+        if (input.length() > 3) {
+            input = "Sir/Lady " + input + " the Magnificent";
+        }
+
+        player.name = input;
+        cout << "Greetings, " << player.name << "! Your adventure of absurdity begins!\n";
+    }
+
+    void beginAdventure() {
+        cout << "\n🌈 Chapter 1: The Realm of Randomness 🌈\n";
+        
+        // Series of random events
+        for (int i = 0; i < 5; ++i) {
+            performRandomEvent();
+            this_thread::sleep_for(chrono::milliseconds(500));
+        }
+    }
+
+    void performRandomEvent() {
+        uniform_int_distribution<int> eventDist(1, 5);
+        int event = eventDist(rng);
+
+        switch (event) {
+            case 1: 
+                telljoke(); 
+                break;
+            case 2: 
+                discoverEasterEgg(); 
+                break;
+            case 3: 
+                randomChallenge(); 
+                break;
+            case 4: 
+                magicalTransformation(); 
+                break;
+            case 5: 
+                encounterWeirdCreature(); 
+                break;
+        }
+    }
+
+    void telljoke() {
+        uniform_int_distribution<int> jokeDist(0, jokes.size() - 1);
+        int jokeIndex = jokeDist(rng);
+
+        cout << "🤡 JOKE TIME! 🤡\n";
+        cout << jokes[jokeIndex] << endl;
+        player.randomJokePoints += 10;
+        player.silliness += 5;
+    }
+
+    void discoverEasterEgg() {
+        uniform_int_distribution<int> eggDist(0, easterEggs.size() - 1);
+        int eggIndex = eggDist(rng);
+
+        cout << "🥚 EASTER EGG DISCOVERED! 🥚\n";
+        cout << easterEggs[eggIndex] << endl;
+        player.weirdness += 15;
+    }
+
+    void randomChallenge() {
+        vector<string> challenges = {
+            "Do your best impression of a confused penguin!",
+            "Sing the alphabet backwards while hopping!",
+            "Tell a story using only movie quotes!",
+            "Dance like nobody's watching (but everyone is)!",
+            "Convince an imaginary friend to do your homework!"
+        };
+
+        uniform_int_distribution<int> challengeDist(0, challenges.size() - 1);
+        int challengeIndex = challengeDist(rng);
+
+        cout << "🏆 RANDOM CHALLENGE ACTIVATED! 🏆\n";
+        cout << challenges[challengeIndex] << endl;
+        player.silliness += 20;
+    }
+
+    void magicalTransformation() {
+        vector<string> transformations = {
+            "You've been transformed into a tap-dancing potato!",
+            "Congratulations! You're now a talking traffic cone!",
+            "You're temporarily a wizard who can only cast dad jokes!",
+            "You've become a motivational speaker for houseplants!",
+            "You are now fluent in the language of rubber chickens!"
+        };
+
+        uniform_int_distribution<int> transformDist(0, transformations.size() - 1);
+        int transformIndex = transformDist(rng);
+
+        cout << "✨ MAGICAL TRANSFORMATION! ✨\n";
+        cout << transformations[transformIndex] << endl;
+        player.weirdness += 25;
+    }
+
+    void encounterWeirdCreature() {
+        vector<string> creatures = {
+            "A quantum physics-studying platypus!",
+            "A philosophical sock puppet!",
+            "A stand-up comedian squirrel!",
+            "A time-traveling garden gnome!",
+            "A motivational speaking cactus!"
+        };
+
+        uniform_int_distribution<int> creatureDist(0, creatures.size() - 1);
+        int creatureIndex = creatureDist(rng);
+
+        cout << "👾 WEIRD CREATURE ENCOUNTER! 👾\n";
+        cout << "You've met: " << creatures[creatureIndex] << endl;
+        player.silliness += 15;
+    }
+
+    void concludeAdventure() {
+        cout << "\n🎊 ADVENTURE COMPLETE! 🎊\n";
+        cout << "Congratulations, " << player.name << "!\n\n";
+
+        // Silly score calculation
+        int totalScore = player.silliness + player.weirdness + player.randomJokePoints;
+
+        cout << "🏅 SILLINESS REPORT 🏅\n";
+        cout << "Silliness Level: " << player.silliness << endl;
+        cout << "Weirdness Meter: " << player.weirdness << endl;
+        cout << "Random Joke Points: " << player.randomJokePoints << endl;
+        cout << "Total Absurdity Score: " << totalScore << endl;
+
+        // Humorous awards based on score
+        if (totalScore < 50) 
+            cout << "Award: Rookie Goofball 🧀\n";
+        else if (totalScore < 100)
+            cout << "Award: Master of Mild Madness 🤪\n";
+        else if (totalScore < 150)
+            cout << "Award: Supreme Silly Sovereign 🤡\n";
+        else
+            cout << "Award: ULTIMATE CHAOS COMMANDER OF THE UNIVERSE! 🌈🚀\n";
+    }
+};
+
 
 // Function prototypes
 void basicOperations(double num1, double num2);
@@ -1575,6 +1783,7 @@ int main() {
     InventoryManagementSystem ims;
     LibraryManagementSystem lms;
     EmployeeManagementSystem ems;
+    SillyAdventureGame game2;
 	
 
     do {
@@ -1961,6 +2170,7 @@ int main() {
                 cout << "11. Product Inventory Management System [#76]\n";
                 cout << "12. Library Management System [#77]\n";
                 cout << "13. Employee Management System [#78]\n";
+                cout << "14. Silly Adventure Game [#79]\n";
                 cout << "Enter your function choice: ";
                 cin >> functionChoice;
                 switch(functionChoice) {
@@ -2002,6 +2212,9 @@ int main() {
                         break;
                     case 13:
                         ems.manageEmployees();
+                        break;
+                    case 14:
+                        game2.playAbsurdGame();
                         break;
                     default:
                         cout << "Invalid choice.\n";
